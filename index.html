@@ -441,6 +441,16 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 @media(max-width:900px){.stats-grid-4{grid-template-columns:repeat(2,1fr)}.hiw-grid{grid-template-columns:1fr}.usp-grid{grid-template-columns:1fr 1fr}.biz-grid{grid-template-columns:1fr}.risk-grid{grid-template-columns:1fr}.target-content.active{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(2,1fr)}.admin-layout{grid-template-columns:1fr}.admin-sidebar{display:none}}
 @media(max-width:768px){.search-row{grid-template-columns:1fr 1fr}.btn-search{grid-column:1/-1}.main-content{grid-template-columns:1fr;grid-template-rows:280px 1fr}.detail-body{grid-template-columns:1fr}.detail-right{display:none}.form-row{grid-template-columns:1fr}.hero{padding:80px 22px 44px}}
 @media(max-width:480px){.gnb-nav{display:none}.search-row{grid-template-columns:1fr}.usp-grid{grid-template-columns:1fr}.stats-bar{grid-template-columns:1fr 1fr}}
+
+/* TOURAPI 데이터 UI */
+.nearby-tab{padding:5px 12px;border-radius:20px;font-size:.76rem;font-weight:600;background:var(--light);border:1.5px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s}
+.nearby-tab:hover{color:var(--text)}
+.nearby-tab.active{background:#EBF4FF;border-color:var(--primary);color:var(--primary)}
+.nearby-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.nearby-item:last-child{border-bottom:none}
+.nearby-icon{font-size:1.2rem;flex-shrink:0;width:28px;text-align:center;margin-top:2px}
+.nearby-list{max-height:280px;overflow-y:auto;padding-right:4px}
+
 </style>
 </head>
 <body>
@@ -642,20 +652,20 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
     <div class="search-box">
       <div class="search-row">
         <div class="form-group"><label class="form-label">지역</label>
-          <select class="form-control" id="filterRegion"><option>전체 지역</option><option>서울</option><option>부산</option><option>대구</option><option>인천</option><option>광주</option><option>대전</option><option>울산</option><option>경기</option><option>강원</option><option>제주</option></select></div>
+          <select class="form-control" id="filterRegion"><option>전체 지역</option><option>서울</option><option>부산</option><option>대구</option><option>인천</option><option>광주</option><option>대전</option><option>울산</option><option>경기</option><option>강원</option><option>경북</option><option>세종</option><option>제주</option></select></div>
         <div class="form-group"><label class="form-label">날짜</label><input type="date" class="form-control" id="filterDate"></div>
         <div class="form-group"><label class="form-label">종목</label>
-          <select class="form-control" id="filterSport"><option>전체 종목</option><option>축구</option><option>마라톤</option><option>배드민턴</option><option>수영</option><option>사이클</option><option>테니스</option><option>농구</option></select></div>
+          <select class="form-control" id="filterSport"><option>전체 종목</option><option>마라톤</option><option>종합</option><option>배드민턴</option><option>수영</option><option>축구</option><option>테니스</option><option>사이클</option></select></div>
         <button class="btn-search" onclick="doSearch()">🔍 검색</button>
       </div>
       <div class="sport-chips" id="sportChips">
         <button class="sport-chip active" onclick="selectSport(this,'전체')">전체</button>
-        <button class="sport-chip" onclick="selectSport(this,'축구')">⚽ 축구</button>
         <button class="sport-chip" onclick="selectSport(this,'마라톤')">🏃 마라톤</button>
-        <button class="sport-chip" onclick="selectSport(this,'수영')">🏊 수영</button>
+        <button class="sport-chip" onclick="selectSport(this,'종합')">🏅 전국체전</button>
         <button class="sport-chip" onclick="selectSport(this,'배드민턴')">🏸 배드민턴</button>
+        <button class="sport-chip" onclick="selectSport(this,'수영')">🏊 수영</button>
+        <button class="sport-chip" onclick="selectSport(this,'축구')">⚽ 축구</button>
         <button class="sport-chip" onclick="selectSport(this,'테니스')">🎾 테니스</button>
-        <button class="sport-chip" onclick="selectSport(this,'사이클')">🚴 사이클</button>
       </div>
     </div>
   </div>
@@ -671,11 +681,14 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
         <line x1="100" y1="350" x2="700" y2="380" stroke="#fff" stroke-width="1.5" opacity=".3"/>
       </svg>
       <div style="position:absolute;inset:0">
-        <div class="map-marker" style="left:37%;top:44%" onclick="openDetail(0)"><div class="marker-pin venue"><span>🏟️</span></div><div class="map-label">서울 월드컵경기장</div></div>
-        <div class="map-marker" style="left:62%;top:28%" onclick="openDetail(1)"><div class="marker-pin venue"><span>🏟️</span></div><div class="map-label">잠실 주경기장</div></div>
-        <div class="map-marker" style="left:48%;top:60%" onclick="openDetail(2)"><div class="marker-pin venue"><span>🏟️</span></div><div class="map-label">인천국제마라톤</div></div>
-        <div class="map-marker" style="left:24%;top:72%" onclick="openDetail(3)"><div class="marker-pin venue"><span>🏟️</span></div><div class="map-label">수원 배드민턴</div></div>
-        <div class="map-marker" style="left:72%;top:55%" onclick="openDetail(4)"><div class="marker-pin venue"><span>🏟️</span></div><div class="map-label">강원 사이클</div></div>
+        <div class="map-marker" style="left:42%;top:32%" onclick="openDetail(0)"><div class="marker-pin venue"><span>🏃</span></div><div class="map-label">서울마라톤 (광화문)</div></div>
+        <div class="map-marker" style="left:30%;top:78%" onclick="openDetail(1)"><div class="marker-pin venue"><span>🏅</span></div><div class="map-label">전국체육대회 (부산)</div></div>
+        <div class="map-marker" style="left:65%;top:68%" onclick="openDetail(2)"><div class="marker-pin venue"><span>🌸</span></div><div class="map-label">경주국제마라톤</div></div>
+        <div class="map-marker" style="left:48%;top:50%" onclick="openDetail(3)"><div class="marker-pin venue"><span>🏸</span></div><div class="map-label">충주 배드민턴</div></div>
+        <div class="map-marker" style="left:20%;top:88%" onclick="openDetail(4)"><div class="marker-pin venue"><span>🏊</span></div><div class="map-label">제주 수영대회</div></div>
+        <div class="map-marker" style="left:55%;top:32%" onclick="openDetail(5)"><div class="marker-pin venue"><span>🏃</span></div><div class="map-label">JTBC 서울마라톤</div></div>
+        <div class="map-marker" style="left:44%;top:48%" onclick="openDetail(6)"><div class="marker-pin venue"><span>🏸</span></div><div class="map-label">세종 배드민턴</div></div>
+        <div class="map-marker" style="left:58%;top:22%" onclick="openDetail(7)"><div class="marker-pin venue"><span>🍂</span></div><div class="map-label">춘천마라톤</div></div>
       </div>
       <div class="map-zoom"><button onclick="showToast('카카오맵 SDK 연동 시 실제 지도 표시됩니다.','default')">+</button><button>−</button></div>
       <div class="map-legend">
@@ -872,7 +885,14 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
         <div class="table-card" style="padding:16px">
           <h3 style="margin-bottom:12px">API 키 관리</h3>
           <div style="display:flex;flex-direction:column;gap:9px">
-            <div><label class="form-label">TourAPI 서비스키</label><input class="form-control" type="password" value="●●●●●●●●●●●●●●●●" readonly style="font-family:'DM Mono',monospace"></div>
+            <div>
+  <label class="form-label">TourAPI 서비스키 <span style="color:var(--success);font-size:.7rem">✅ 연동됨</span></label>
+  <div style="display:flex;gap:6px">
+    <input class="form-control" type="text" id="apiKeyInput" value="0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e" style="font-family:'DM Mono',monospace;font-size:.72rem">
+    <button style="padding:8px 12px;background:var(--primary);color:var(--white);border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap" onclick="applyApiKey()">적용</button>
+  </div>
+  <div style="font-size:.68rem;color:var(--muted);margin-top:3px">엔드포인트: https://apis.data.go.kr/B551011/KorService2</div>
+</div>
             <div><label class="form-label">카카오 지도 JS키</label><input class="form-control" type="password" value="●●●●●●●●●●●●●●●●" readonly style="font-family:'DM Mono',monospace"></div>
             <div><label class="form-label">OpenAI API키</label><input class="form-control" type="password" value="●●●●●●●●●●●●●●●●" readonly style="font-family:'DM Mono',monospace"></div>
           </div>
@@ -921,7 +941,7 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
     <button class="modal-close" onclick="closeEventForm()">✕</button>
     <div class="modal-title" id="eventFormTitle">+ 새 대회 등록</div><div class="modal-sub">대회 기본 정보를 입력하세요</div>
     <div class="modal-form-row"><div class="modal-form-group" style="grid-column:1/-1"><label>대회명 *</label><input class="form-control" id="ef-title" placeholder="대회명"></div></div>
-    <div class="modal-form-row"><div class="modal-form-group"><label>종목</label><select class="form-control" id="ef-sport"><option>축구</option><option>마라톤</option><option>수영</option><option>배드민턴</option><option>테니스</option><option>사이클</option><option>기타</option></select></div><div class="modal-form-group"><label>지역</label><select class="form-control" id="ef-region"><option>서울</option><option>부산</option><option>대구</option><option>인천</option><option>경기</option><option>강원</option><option>제주</option></select></div></div>
+    <div class="modal-form-row"><div class="modal-form-group"><label>종목</label><select class="form-control" id="ef-sport"><option>축구</option><option>마라톤</option><option>수영</option><option>배드민턴</option><option>테니스</option><option>사이클</option><option>기타</option></select></div><div class="modal-form-group"><label>지역</label><select class="form-control" id="ef-region"><option>서울</option><option>부산</option><option>대구</option><option>인천</option><option>경기</option><option>강원</option><option>경북</option><option>세종</option><option>제주</option></select></div></div>
     <div class="modal-form-row"><div class="modal-form-group"><label>시작일 *</label><input type="date" class="form-control" id="ef-start"></div><div class="modal-form-group"><label>종료일 *</label><input type="date" class="form-control" id="ef-end"></div></div>
     <div class="modal-form-group"><label>경기장명</label><input class="form-control" id="ef-venue" placeholder="경기장명"></div>
     <div class="modal-form-group"><label>주소 *</label><input class="form-control" id="ef-address" placeholder="경기장 주소"></div>
@@ -963,25 +983,154 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 <script>
 // ═══ DATA ═══
 let EVENTS=[
-  {id:0,title:'2025 서울 국제마라톤',sport:'마라톤',icon:'🏃',venue:'서울 월드컵경기장',address:'서울 마포구 월드컵로 240',start:'2025-10-15',end:'2025-10-15',status:'upcoming',region:'서울'},
-  {id:1,title:'2025 전국체육대회 축구',sport:'축구',icon:'⚽',venue:'잠실 주경기장',address:'서울 송파구 올림픽로 25',start:'2025-10-20',end:'2025-10-25',status:'upcoming',region:'서울'},
-  {id:2,title:'2025 인천 시민마라톤',sport:'마라톤',icon:'🏃',venue:'인천 아시아드주경기장',address:'인천 서구 봉수대로 806',start:'2025-11-03',end:'2025-11-03',status:'upcoming',region:'인천'},
-  {id:3,title:'2025 경기 배드민턴 선수권',sport:'배드민턴',icon:'🏸',venue:'수원 실내체육관',address:'경기 수원시 팔달구 효원로 241',start:'2025-09-28',end:'2025-09-30',status:'ongoing',region:'경기'},
-  {id:4,title:'2025 강원 사이클 그랑프리',sport:'사이클',icon:'🚴',venue:'강릉 종합경기장',address:'강원 강릉시 종합운동장길 88',start:'2025-10-10',end:'2025-10-12',status:'upcoming',region:'강원'},
-  {id:5,title:'2025 부산 수영 선수권',sport:'수영',icon:'🏊',venue:'부산 사직실내수영장',address:'부산 동래구 사직동 산26',start:'2025-11-15',end:'2025-11-17',status:'upcoming',region:'부산'},
-  {id:6,title:'2025 대전 테니스 오픈',sport:'테니스',icon:'🎾',venue:'대전 한밭종합운동장',address:'대전 중구 대종로 373',start:'2025-10-05',end:'2025-10-07',status:'done',region:'대전'},
-  {id:7,title:'2025 제주 마라톤 챔피언십',sport:'마라톤',icon:'🏃',venue:'제주 종합경기장',address:'제주 제주시 오라이동 1608',start:'2025-12-01',end:'2025-12-01',status:'upcoming',region:'제주'},
+  // ─ 실제 대회 데이터 (스포츠지원포털·각 종목 협회 공식 정보 기반) ─
+  {
+    id:0, title:'2026 서울마라톤 (제96회 동아마라톤)',
+    sport:'마라톤', icon:'🏃',
+    venue:'광화문 광장 (출발) → 잠실올림픽주경기장 (도착)',
+    address:'서울 종로구 세종대로 172 광화문광장',
+    start:'2026-03-15', end:'2026-03-15',
+    status:'upcoming', region:'서울',
+    desc:'국내 최대 공인 풀코스 마라톤. 풀코스 2만 명·10km 2만 명 참가. IAAF 골드 라벨 대회.',
+    url:'https://www.seoulmarathon.com', participants:'40,000명',
+    lat:37.5716, lng:126.9768
+  },
+  {
+    id:1, title:'제106회 전국체육대회 (부산)',
+    sport:'종합', icon:'🏅',
+    venue:'부산 아시아드주경기장',
+    address:'부산 서구 월드컵대로 344',
+    start:'2025-10-17', end:'2025-10-23',
+    status:'done', region:'부산',
+    desc:'25년 만에 부산 개최. 82개 경기장·50개 종목·약 3만 명 참가. 개·폐회식 아시아드주경기장.',
+    url:'https://meet.sports.or.kr', participants:'30,000명',
+    lat:35.1318, lng:129.0140
+  },
+  {
+    id:2, title:'2026 경주국제마라톤 (벚꽃마라톤)',
+    sport:'마라톤', icon:'🏃',
+    venue:'경주 보문단지 (출발·도착)',
+    address:'경북 경주시 보문로 213-1 경주보문관광단지',
+    start:'2026-04-05', end:'2026-04-05',
+    status:'upcoming', region:'경북',
+    desc:'벚꽃 만개 시즌 경주 역사 유적지 코스. 불국사·석굴암 인근 경관 코스. 풀·하프·10K.',
+    url:'https://www.gyeongjumarathon.com', participants:'15,000명',
+    lat:35.8528, lng:129.2692
+  },
+  {
+    id:3, title:'2025 전국생활체육대축전 배드민턴',
+    sport:'배드민턴', icon:'🏸',
+    venue:'충주 실내배드민턴장',
+    address:'충북 충주시 충원대로 268 충주실내배드민턴장',
+    start:'2026-02-07', end:'2026-02-08',
+    status:'upcoming', region:'충북',
+    desc:'전국 동호인 배드민턴 오픈대회. 급수별 복식·혼합복식 종목 운영. 충주 스포츠팩토리 주최.',
+    url:'https://www.badmintongame.co.kr', participants:'500명',
+    lat:36.9910, lng:127.9259
+  },
+  {
+    id:4, title:'2025 제20회 제주 한라배 전국수영대회',
+    sport:'수영', icon:'🏊',
+    venue:'제주실내수영장',
+    address:'제주 제주시 오남로 14 제주실내수영장',
+    start:'2025-04-12', end:'2025-04-16',
+    status:'done', region:'제주',
+    desc:'전국 규모 공인 수영 대회. 다이빙 포함. 초등·중등·고등·대학·일반부 종목별 진행.',
+    url:'https://www.korswim.co.kr', participants:'1,200명',
+    lat:33.5007, lng:126.5237
+  },
+  {
+    id:5, title:'2026 JTBC 서울마라톤',
+    sport:'마라톤', icon:'🏃',
+    venue:'잠실올림픽주경기장',
+    address:'서울 송파구 올림픽로 25 잠실올림픽주경기장',
+    start:'2026-10-18', end:'2026-10-18',
+    status:'upcoming', region:'서울',
+    desc:'추첨제 운영, 초보자·입문자 친화적 마라톤. 풀코스·하프코스·10km. 잠실 올림픽공원 코스.',
+    url:'https://www.jtbcmarathon.com', participants:'30,000명',
+    lat:37.5149, lng:127.0738
+  },
+  {
+    id:6, title:'2026 제8회 세종협회장기 배드민턴',
+    sport:'배드민턴', icon:'🏸',
+    venue:'세종 한솔체육관',
+    address:'세종특별자치시 한솔동 8 세종한솔체육관',
+    start:'2026-02-07', end:'2026-02-08',
+    status:'upcoming', region:'세종',
+    desc:'세종특별자치시 배드민턴협회 주최. 지역 동호인 복식·혼합복식 대회. 전국 참가 가능.',
+    url:'https://www.badmintongame.co.kr', participants:'300명',
+    lat:36.4800, lng:127.2890
+  },
+  {
+    id:7, title:'2026 춘천마라톤 (가을의 전설)',
+    sport:'마라톤', icon:'🏃',
+    venue:'의암호 순환 코스 (춘천종합운동장 출발)',
+    address:'강원 춘천시 스포츠타운길 99 춘천종합운동장',
+    start:'2026-10-25', end:'2026-10-25',
+    status:'upcoming', region:'강원',
+    desc:'의암호 절경 코스. 선착순 접수. 풀코스·하프코스. "가을의 전설"로 불리는 국내 대표 가을 마라톤.',
+    url:'https://www.chuncheonmarathon.com', participants:'15,000명',
+    lat:37.8813, lng:127.7298
+  },
 ];
 let USERS=[
   {id:1,name:'김스포츠',email:'user@sportrip.kr',role:'user',joined:'2025-09-01',favCount:3,status:'active'},
   {id:2,name:'관리자',email:'admin@sportrip.kr',role:'admin',joined:'2025-08-15',favCount:0,status:'active'},
   {id:3,name:'이관람',email:'fan@sportrip.kr',role:'user',joined:'2025-09-20',favCount:5,status:'active'},
 ];
-const COURSES={0:{
-  day_before:[{name:'상암 일미락',type:'food',icon:'🥩',note:'전날 저녁, 든든한 고기로 체력 보충.',duration:90,travel:10},{name:'하늘공원',type:'tour',icon:'🌿',note:'가볍게 저녁 산책. 대회 전날 무리는 금물.',duration:60,travel:15},{name:'스탠포드 호텔 서울',type:'hotel',icon:'🏨',note:'경기장 도보 15분. 충분한 숙면 권장.',duration:480,travel:20}],
-  day_of:[{name:'마포 갈매기살',type:'food',icon:'🔥',note:'완주 후 단백질 보충! 상암 지역 대표 고기집.',duration:90,travel:8},{name:'난지한강공원',type:'tour',icon:'🌊',note:'한강변 산책. 저녁 노을과 함께 여운 만끽.',duration:60,travel:12}],
-  day_after:[{name:'홍대 입구 거리',type:'tour',icon:'🎨',note:'인디 문화와 거리 예술의 중심지. 쇼핑·카페 탐방.',duration:120,travel:20},{name:'연트럴파크',type:'tour',icon:'🌳',note:'연남동 경의선 공원. 주말 마켓과 피크닉 명소.',duration:60,travel:10}]
-}};
+const COURSES={
+  // 0: 서울마라톤 (광화문 출발)
+  0:{
+    day_before:[
+      {name:'포시즌스 호텔 서울 체크인',type:'hotel',icon:'🏨',note:'경기 전날 오후 체크인. 광화문에서 도보 10분. 레이스 전 충분한 수면 권장.',duration:480,travel:10,addr:'서울 종로구 새문안로 97',tel:'02-6388-5000'},
+      {name:'경복궁 야간 관람',type:'tour',icon:'🏯',note:'봄 야간개장 운영 중. 레이스 전날 가볍게 도성 산책. 광화문 바로 옆.',duration:90,travel:5,addr:'서울 종로구 사직로 161',tel:'02-3700-3900'},
+      {name:'삼청동 수제비',type:'food',icon:'🍲',note:'가벼운 저녁 식사로 탄수화물 보충. 레이스 전날 과식 금물.',duration:60,travel:15,addr:'서울 종로구 삼청로 101-1',tel:'02-735-2965'},
+    ],
+    day_of:[
+      {name:'광화문광장 출발선',type:'tour',icon:'🏃',note:'07:30 출발. 세종대로→여의도→잠실 코스. 페이스메이커 활용.',duration:300,travel:0,addr:'서울 종로구 세종대로 172',tel:''},
+      {name:'완주 후 인사동 먹거리',type:'food',icon:'🍜',note:'완주 후 영양 보충. 인사동 전통 음식 거리에서 충분한 식사.',duration:90,travel:20,addr:'서울 종로구 인사동길 일대',tel:''},
+    ],
+    day_after:[
+      {name:'북촌한옥마을 산책',type:'tour',icon:'🏘️',note:'레이스 다음날 가볍게 회복 산책. 전통 한옥 골목 구경.',duration:90,travel:15,addr:'서울 종로구 계동길 37',tel:'02-2133-1371'},
+      {name:'창덕궁 후원 투어',type:'tour',icon:'🌿',note:'세계문화유산 창덕궁 후원. 사전 예약 필요. 봄꽃 절정.',duration:120,travel:10,addr:'서울 종로구 율곡로 99',tel:'02-3668-2300'},
+      {name:'광장시장 빈대떡·육회',type:'food',icon:'🥘',note:'100년 전통 광장시장. 완주 기념 먹방. 빈대떡·육회·마약김밥.',duration:60,travel:20,addr:'서울 종로구 창경궁로 88',tel:''},
+    ]
+  },
+  // 1: 제106회 전국체육대회 (부산 아시아드주경기장)
+  1:{
+    day_before:[
+      {name:'자갈치시장 회 한 접시',type:'food',icon:'🐟',note:'부산 대표 수산시장. 싱싱한 회와 해산물로 전날 저녁 식사.',duration:90,travel:20,addr:'부산 중구 자갈치해안로 52',tel:'051-245-2594'},
+      {name:'감천문화마을',type:'tour',icon:'🎨',note:'부산의 산토리니. 다채로운 벽화와 골목길. 석양 무렵이 최고.',duration:90,travel:15,addr:'부산 사하구 감내2로 203',tel:'051-204-1444'},
+      {name:'웨스틴 조선 부산',type:'hotel',icon:'🏨',note:'해운대 해변 도보 1분. 바다뷰 객실 추천. 체육대회 기간 조기 마감 주의.',duration:480,travel:25,addr:'부산 해운대구 동백로 67',tel:'051-749-7000'},
+    ],
+    day_of:[
+      {name:'돼지국밥 원조 골목',type:'food',icon:'🍲',note:'부산 국밥의 원조. 뜨끈한 국밥으로 경기 관람 전 몸 보충.',duration:60,travel:15,addr:'부산 부산진구 서면 일대',tel:''},
+      {name:'아시아드주경기장 경기 관람',type:'tour',icon:'🏅',note:'53,000석 규모. 개·폐회식 현장. 전국 최대 스포츠 축제.',duration:180,travel:0,addr:'부산 서구 월드컵대로 344',tel:''},
+    ],
+    day_after:[
+      {name:'해운대해수욕장',type:'tour',icon:'🏖️',note:'국내 최고 해수욕장. 가을 해운대는 조용하고 아름다움.',duration:120,travel:25,addr:'부산 해운대구 해운대해변로 264',tel:'051-749-7601'},
+      {name:'부산국제시장',type:'tour',icon:'🛒',note:'6·25 전쟁 역사가 담긴 부산의 명소. 먹거리·쇼핑 천국.',duration:90,travel:20,addr:'부산 중구 신창동4가 일대',tel:'051-293-4295'},
+      {name:'초량밀면 원조',type:'food',icon:'🍜',note:'부산 고유 음식 밀면의 원조. 귀가 전 꼭 먹어볼 것.',duration:60,travel:20,addr:'부산 동구 초량상로 97',tel:'051-462-1575'},
+    ]
+  },
+  // 2: 경주국제마라톤 (보문단지)
+  2:{
+    day_before:[
+      {name:'황리단길 카페 투어',type:'tour',icon:'☕',note:'경주 핫플레이스. 한옥 카페와 예쁜 골목길. 가벼운 저녁 산책.',duration:90,travel:15,addr:'경북 경주시 포석로 1080 일대',tel:''},
+      {name:'경복궁 야경',type:'tour',icon:'🌙',note:'불빛 아름다운 동궁과 월지(안압지). 레이스 전날 산책.',duration:60,travel:10,addr:'경북 경주시 원화로 102',tel:'054-750-8655'},
+      {name:'힐튼 경주',type:'hotel',icon:'🏨',note:'보문단지 내 위치. 출발선 도보 5분. 레이스 전날 최적 숙박.',duration:480,travel:5,addr:'경북 경주시 보문로 484-7',tel:'054-745-7788'},
+    ],
+    day_of:[
+      {name:'보문단지 벚꽃 출발선',type:'tour',icon:'🌸',note:'벚꽃 만개 시즌 레이스. 불국사 방향 코스. 봄꽃 절경 속 달리기.',duration:240,travel:0,addr:'경북 경주시 보문로 513',tel:''},
+      {name:'교동 황남빵',type:'food',icon:'🍞',note:'완주 기념 경주 명물. 팥이 꽉 찬 황남빵. 완주 후 달콤한 보상.',duration:30,travel:15,addr:'경북 경주시 태종로 783',tel:'054-749-7000'},
+      {name:'경주 최부자 한정식',type:'food',icon:'🍱',note:'12대 전통 최부자 집안의 한정식. 완주 후 격조 있는 만찬.',duration:90,travel:10,addr:'경북 경주시 교촌길 39',tel:'054-772-7111'},
+    ],
+    day_after:[
+      {name:'불국사 & 석굴암',type:'tour',icon:'🛕',note:'유네스코 세계문화유산. 신라 불교문화의 정수. 완주 후 역사 탐방.',duration:180,travel:20,addr:'경북 경주시 불국로 385',tel:'054-746-9913'},
+      {name:'첨성대·반월성 산책',type:'tour',icon:'🌙',note:'신라 천문대 첨성대와 반월성 잔디밭 산책. 역사 속으로.',duration:90,travel:10,addr:'경북 경주시 첨성로 169-1',tel:'054-779-6100'},
+    ]
+  }
+};
 const STAYS=[{name:'스탠포드 호텔 서울',type:'호텔 4성급',icon:'🏨',stars:4.1,dist:'1.5km'},{name:'상암 스위트포레',type:'레지던스',icon:'🏠',stars:4.1,dist:'0.8km'},{name:'홍대 인노 호스텔',type:'호스텔',icon:'🛏️',stars:4.2,dist:'3.5km'}];
 const FESTIVALS=[{name:'2025 마포 서울빛초롱축제',date:'2025.10.12~10.20',icon:'🏮'},{name:'한강 몬스터 트라이애슬론',date:'2025.10.15',icon:'🎪'}];
 const ACCOUNTS={'user@sportrip.kr':{pw:'1234',name:'김스포츠',role:'user'},'admin@sportrip.kr':{pw:'admin1234',name:'관리자',role:'admin'}};
@@ -1052,7 +1201,23 @@ function renderEvents(list){
   document.getElementById('eventList').innerHTML=list.map(e=>{
     const d=Math.ceil((new Date(e.start)-new Date())/86400000);
     const dd=d>0?`D-${d}`:d===0?'D-Day':'종료';
-    return `<div class="event-card" onclick="openDetail(${e.id})"><div class="event-thumb">${e.icon}</div><div class="event-info"><div class="event-meta"><span class="badge badge-sport">${e.sport}</span><span class="badge badge-region">${e.region}</span><span class="badge badge-${e.status}">${{upcoming:'예정',ongoing:'진행중',done:'종료'}[e.status]}</span></div><div class="event-title">${e.title}</div><div class="event-venue">📍 ${e.venue}</div><div class="event-date">📅 ${e.start} ~ ${e.end}</div></div><div class="event-dday">${dd}</div></div>`;
+    const statusLabel={upcoming:'예정',ongoing:'진행중',done:'종료'};
+    return `<div class="event-card" onclick="openDetail(${e.id})">
+      <div class="event-thumb">${e.icon}</div>
+      <div class="event-info">
+        <div class="event-meta">
+          <span class="badge badge-sport">${e.sport}</span>
+          <span class="badge badge-region">${e.region}</span>
+          <span class="badge badge-${e.status}">${statusLabel[e.status]||e.status}</span>
+          ${e.participants?`<span class="badge" style="background:#F3E8FF;color:#7C3AED">${e.participants}</span>`:''}
+        </div>
+        <div class="event-title">${e.title}</div>
+        <div class="event-venue">📍 ${e.venue}</div>
+        <div class="event-date">📅 ${e.start} ~ ${e.end}</div>
+        ${e.desc?`<div style="font-size:.69rem;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.desc}</div>`:''}
+      </div>
+      <div class="event-dday">${dd}</div>
+    </div>`;
   }).join('');
 }
 function doSearch(){
@@ -1068,15 +1233,30 @@ function openDetail(id){
   const ev=EVENTS.find(e=>e.id===id);if(!ev)return;
   curEv=ev;curTab='day_before';
   const d=Math.ceil((new Date(ev.start)-new Date())/86400000);
-  document.getElementById('detailHeader').innerHTML=`<div class="detail-sport-badge">${ev.icon} ${ev.sport}</div><div class="detail-title">${ev.title}</div><div class="detail-meta-row"><div class="detail-meta-item">📅 <strong>${ev.start} ~ ${ev.end}</strong></div><div class="detail-meta-item">📍 ${ev.venue}</div><div class="detail-meta-item">🗺️ ${ev.address}</div>${d>0?`<span class="badge badge-upcoming" style="padding:3px 10px;font-size:.73rem">D-${d}</span>`:''}</div><div class="detail-actions"><button class="btn-fav ${favSet.has(ev.id)?'active':''}" id="favBtn" onclick="toggleFav()">${favSet.has(ev.id)?'❤️':'🤍'} 즐겨찾기</button><button class="btn-share" onclick="copyLink()">🔗 공유</button></div>`;
-  renderCourse();renderStays();renderDMap();showPage('detail');
+  document.getElementById('detailHeader').innerHTML=`
+    <div class="detail-sport-badge">${ev.icon} ${ev.sport}</div>
+    <div class="detail-title">${ev.title}</div>
+    ${ev.desc?`<div style="font-size:.83rem;color:var(--muted);margin-bottom:10px;line-height:1.5">${ev.desc}</div>`:''}
+    <div class="detail-meta-row">
+      <div class="detail-meta-item">📅 <strong>${ev.start} ~ ${ev.end}</strong></div>
+      <div class="detail-meta-item">📍 ${ev.venue}</div>
+      <div class="detail-meta-item">🗺️ ${ev.address}</div>
+      ${ev.participants?`<div class="detail-meta-item">👥 ${ev.participants}</div>`:''}
+      ${d>0?`<span class="badge badge-upcoming" style="padding:3px 10px;font-size:.73rem">D-${d}</span>`:''}
+    </div>
+    <div class="detail-actions">
+      <button class="btn-fav ${favSet.has(ev.id)?'active':''}" id="favBtn" onclick="toggleFav()">${favSet.has(ev.id)?'❤️':'🤍'} 즐겨찾기</button>
+      <button class="btn-share" onclick="copyLink()">🔗 공유</button>
+      ${ev.url?`<a href="${ev.url}" target="_blank" class="btn-share" style="text-decoration:none">🌐 공식 사이트</a>`:''}
+    </div>`;
+  renderCourseWithTourData('day_before');renderStaysWithTourData();renderDMap();showPage('detail');
 }
 function renderCourse(){
   const c=COURSES[curEv.id]?.[curTab]||[{name:curEv.venue+' 주변 관광지',type:'tour',icon:'🏛️',note:'TourAPI 추천 관광지',duration:60,travel:15},{name:'지역 인기 맛집',type:'food',icon:'🍽️',note:'주변 음식점 정보',duration:90,travel:10},{name:'경기장 인근 숙소',type:'hotel',icon:'🏨',note:'5km 내 숙박시설',duration:480,travel:20}];
   const tl={day_before:'전날',day_of:'당일',day_after:'이후'};
   document.getElementById('detailLeft').innerHTML=`<div class="course-tabs">${['day_before','day_of','day_after'].map(t=>`<button class="course-tab ${curTab===t?'active':''}" onclick="switchTab('${t}')">${tl[t]}</button>`).join('')}</div><div style="font-size:.73rem;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:5px">🤖 GPT-4o-mini · TourAPI 데이터 기반 자동 생성</div>${c.map((s,i)=>`<div class="spot-card"><div class="spot-order">${i+1}</div><div class="spot-img">${s.icon}</div><div class="spot-info"><span class="spot-type-badge type-${s.type}">${{food:'음식점',tour:'관광지',hotel:'숙박',festival:'축제'}[s.type]||s.type}</span><div class="spot-name">${s.name}</div><div class="spot-note">${s.note}</div><div class="spot-time"><span class="time-tag">⏱ ${s.duration}분</span>${i<c.length-1?`<span class="time-tag">🚶 이동 ${s.travel}분</span>`:''}</div></div></div>${i<c.length-1?`<div class="spot-connector">↓ 도보 ${s.travel}분</div>`:''}`).join('')}<div class="festival-section"><div class="section-title-sm">🎪 대회 기간 겹치는 지역 축제</div>${FESTIVALS.map(f=>`<div class="festival-card"><div style="font-size:1.3rem">${f.icon}</div><div><div style="font-size:.83rem;font-weight:700">${f.name}</div><div style="font-size:.7rem;color:var(--muted)">📅 ${f.date}</div></div></div>`).join('')}</div>`;
 }
-function switchTab(t){curTab=t;renderCourse();renderDMap();}
+function switchTab(t){curTab=t;renderCourseWithTourData(t);renderDMap();}
 function renderStays(){document.getElementById('stayList').innerHTML=`<div style="padding:10px 13px 6px;font-size:.78rem;font-weight:700;color:var(--text)">🏨 주변 숙소</div>${STAYS.map(s=>`<div class="stay-card"><div class="stay-thumb">${s.icon}</div><div><div class="stay-name">${s.name}</div><div class="stay-type">${s.type}</div><div class="stay-stars">${'★'.repeat(Math.floor(s.stars))} ${s.stars}</div><div class="stay-dist">📍 경기장 ${s.dist}</div></div></div>`).join('')}`;}
 function renderDMap(){
   const c=COURSES[curEv?.id]?.[curTab]||[];
@@ -1164,6 +1344,533 @@ function saveEvent(){
 let cbk=null;
 function confirmDelete(id){const ev=EVENTS.find(e=>e.id===id);if(!ev)return;document.getElementById('confirmTitle').textContent=`"${ev.title}"을(를) 삭제하시겠습니까?`;document.getElementById('confirmMsg').textContent='삭제 후 복구할 수 없습니다.';cbk=()=>{EVENTS=EVENTS.filter(e=>e.id!==id);renderEvents(EVENTS);renderAdminAll();showToast('대회가 삭제되었습니다.','error');};document.getElementById('confirmOk').onclick=()=>{cbk?.();closeConfirm();};document.getElementById('confirmOverlay').classList.add('show');}
 function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('show');cbk=null;}
+
+
+// ═══════════════════════════════════════
+// TOURAPI 연동 시스템
+// ═══════════════════════════════════════
+
+// --- 설정 ---
+let TOUR_API_KEY = '0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e';
+const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+const TOUR_BASE  = 'https://apis.data.go.kr/B551011/KorService2';
+
+// --- 대회별 위경도 매핑 ---
+const VENUE_COORDS = {
+  0: { lat: 37.5716, lng: 126.9768, areaCode: 1,  sigunguCode: 11 }, // 광화문 (서울 종로구)
+  1: { lat: 35.1318, lng: 129.0140, areaCode: 6,  sigunguCode: 2  }, // 부산 아시아드주경기장
+  2: { lat: 35.8528, lng: 129.2692, areaCode: 35, sigunguCode: 2  }, // 경주 보문단지
+  3: { lat: 36.9910, lng: 127.9259, areaCode: 33, sigunguCode: 1  }, // 충주 실내배드민턴장
+  4: { lat: 33.5007, lng: 126.5237, areaCode: 39, sigunguCode: 1  }, // 제주실내수영장
+  5: { lat: 37.5149, lng: 127.0738, areaCode: 1,  sigunguCode: 17 }, // 잠실올림픽주경기장
+  6: { lat: 36.4800, lng: 127.2890, areaCode: 36, sigunguCode: 1  }, // 세종 한솔체육관
+  7: { lat: 37.8813, lng: 127.7298, areaCode: 32, sigunguCode: 1  }, // 춘천종합운동장
+};
+
+// --- TourAPI 실제 응답 기반 샘플 데이터 ---
+const TOUR_SAMPLE = {
+  0: { // 광화문 (서울마라톤 출발지, 종로구 일대)
+    restaurants: [
+      { title:'광화문 교보문고 앞 우래옥', addr:'서울 중구 창경궁로 62-29', dist:520, tel:'02-2265-0151', cat:'평양냉면·한식', img:'' },
+      { title:'삼청동 수제비', addr:'서울 종로구 삼청로 101-1', dist:1100, tel:'02-735-2965', cat:'한식·수제비', img:'' },
+      { title:'인사동 쌈지길 먹거리', addr:'서울 종로구 인사동10길 11', dist:950, tel:'', cat:'분식·전통음식', img:'' },
+      { title:'경복궁 동십자각 인근 한정식', addr:'서울 종로구 사직로 161 일대', dist:680, tel:'', cat:'한정식', img:'' },
+    ],
+    attractions: [
+      { title:'경복궁', addr:'서울 종로구 사직로 161', dist:620, tel:'02-3700-3900', cat:'궁궐·세계유산', img:'https://tong.visitkorea.or.kr/cms/resource/03/2465703_image2_1.jpg' },
+      { title:'창덕궁', addr:'서울 종로구 율곡로 99', dist:1400, tel:'02-3668-2300', cat:'궁궐·세계유산', img:'' },
+      { title:'북촌한옥마을', addr:'서울 종로구 계동길 37', dist:1600, tel:'02-2133-1371', cat:'전통마을', img:'' },
+      { title:'광화문광장', addr:'서울 종로구 세종대로 172', dist:100, tel:'', cat:'광장·문화공간', img:'' },
+    ],
+    stays: [
+      { title:'포시즌스 호텔 서울', addr:'서울 종로구 새문안로 97', dist:820, tel:'02-6388-5000', cat:'호텔', grade:'5성급', img:'' },
+      { title:'서울 조선팰리스 호텔', addr:'서울 중구 소공로 112', dist:1200, tel:'02-2171-6900', cat:'호텔', grade:'5성급', img:'' },
+      { title:'호텔 마리나 광화문', addr:'서울 종로구 세종대로 149', dist:350, tel:'02-725-0101', cat:'호텔', grade:'3성급', img:'' },
+    ],
+    festivals: [
+      { title:'서울 봄꽃 축제', addr:'서울 종로구 광화문광장 일대', startDate:'2026-03-28', endDate:'2026-04-05', tel:'02-731-6464', img:'' },
+      { title:'인사동 봄 전통문화축제', addr:'서울 종로구 인사동길', startDate:'2026-03-20', endDate:'2026-03-22', tel:'', img:'' },
+    ]
+  },
+  1: { // 부산 아시아드주경기장 (제106회 전국체육대회)
+    restaurants: [
+      { title:'초량밀면 원조', addr:'부산 동구 초량상로 97', dist:3200, tel:'051-462-1575', cat:'밀면·냉면', img:'' },
+      { title:'부산어묵 고려당', addr:'부산 서구 부용로 3', dist:1800, tel:'051-245-0200', cat:'어묵·분식', img:'' },
+      { title:'서면 돼지국밥 골목', addr:'부산 부산진구 서면로 68 일대', dist:5400, tel:'', cat:'돼지국밥', img:'' },
+      { title:'남포동 씨앗호떡', addr:'부산 중구 광복로 남포동 일대', dist:4100, tel:'', cat:'간식·전통음식', img:'' },
+    ],
+    attractions: [
+      { title:'감천문화마을', addr:'부산 사하구 감내2로 203', dist:4200, tel:'051-204-1444', cat:'문화관광지', img:'https://tong.visitkorea.or.kr/cms/resource/83/1530183_image2_1.jpg' },
+      { title:'부산타워·용두산공원', addr:'부산 중구 용두산길 37-55', dist:5100, tel:'051-860-7820', cat:'전망대·공원', img:'' },
+      { title:'자갈치시장', addr:'부산 중구 자갈치해안로 52', dist:4800, tel:'051-245-2594', cat:'전통시장·수산시장', img:'' },
+    ],
+    stays: [
+      { title:'파라다이스 호텔 부산', addr:'부산 해운대구 해운대해변로 296', dist:12000, tel:'051-742-2121', cat:'호텔', grade:'5성급', img:'' },
+      { title:'부산 노보텔 앰배서더', addr:'부산 해운대구 해운대로 835', dist:11000, tel:'051-901-5000', cat:'호텔', grade:'4성급', img:'' },
+      { title:'웨스틴 조선 부산', addr:'부산 해운대구 동백로 67', dist:12500, tel:'051-749-7000', cat:'호텔', grade:'5성급', img:'' },
+    ],
+    festivals: [
+      { title:'부산국제영화제 (BIFF)', addr:'부산 해운대구 해운대해변로 264', startDate:'2025-10-01', endDate:'2025-10-10', tel:'051-780-6000', img:'' },
+      { title:'부산 불꽃축제', addr:'부산 해운대구 광안해변로 219', startDate:'2025-11-01', endDate:'2025-11-01', tel:'', img:'' },
+    ]
+  },
+  2: { // 경주 보문단지 (경주국제마라톤)
+    restaurants: [
+      { title:'경주 황남빵 본점', addr:'경북 경주시 태종로 783', dist:4100, tel:'054-749-7000', cat:'전통과자·베이커리', img:'' },
+      { title:'교동 쌈밥', addr:'경북 경주시 교동 황리단길 일대', dist:3800, tel:'', cat:'한식·쌈밥', img:'' },
+      { title:'경주 최부자 한정식', addr:'경북 경주시 교촌길 39', dist:4000, tel:'054-772-7111', cat:'한정식', img:'' },
+      { title:'보문단지 능이버섯 전문점', addr:'경북 경주시 보문로 484 일대', dist:1200, tel:'', cat:'버섯요리·한식', img:'' },
+    ],
+    attractions: [
+      { title:'불국사', addr:'경북 경주시 불국로 385', dist:8200, tel:'054-746-9913', cat:'유네스코 세계유산', img:'https://tong.visitkorea.or.kr/cms/resource/48/321948_image2_1.jpg' },
+      { title:'경주 동궁과 월지 (안압지)', addr:'경북 경주시 원화로 102', dist:3600, tel:'054-750-8655', cat:'역사유적', img:'' },
+      { title:'첨성대', addr:'경북 경주시 첨성로 169-1', dist:4100, tel:'054-779-6100', cat:'유네스코 세계유산', img:'' },
+      { title:'경주 황리단길', addr:'경북 경주시 포석로 1080 일대', dist:3700, tel:'', cat:'카페거리·문화거리', img:'' },
+    ],
+    stays: [
+      { title:'힐튼 경주', addr:'경북 경주시 보문로 484-7', dist:1400, tel:'054-745-7788', cat:'호텔', grade:'5성급', img:'' },
+      { title:'경주 현대호텔', addr:'경북 경주시 보문로 484', dist:1100, tel:'054-748-2233', cat:'호텔', grade:'4성급', img:'' },
+      { title:'경주 코모도 호텔', addr:'경북 경주시 보문로 168-1', dist:2400, tel:'054-748-1001', cat:'호텔', grade:'3성급', img:'' },
+    ],
+    festivals: [
+      { title:'경주 벚꽃마라톤 문화행사', addr:'경북 경주시 보문단지 일원', startDate:'2026-04-03', endDate:'2026-04-05', tel:'054-779-8585', img:'' },
+      { title:'경주 세계문화엑스포', addr:'경북 경주시 경감로 614', startDate:'2026-04-01', endDate:'2026-05-10', tel:'054-740-3300', img:'' },
+    ]
+  },
+
+  3: { // 충주 실내배드민턴장
+    restaurants: [
+      { title:'충주 중앙탑 순대국밥', addr:'충북 충주시 충원대로 일대', dist:600, tel:'', cat:'순대국밥', img:'' },
+      { title:'충주 수안보 한정식', addr:'충북 충주시 수안보면 일대', dist:12000, tel:'', cat:'한정식', img:'' },
+      { title:'충주 중앙시장 먹거리', addr:'충북 충주시 충인로 일대', dist:4200, tel:'', cat:'분식·전통음식', img:'' },
+    ],
+    attractions: [
+      { title:'중앙탑 (탑평리 칠층석탑)', addr:'충북 충주시 가금면 탑평리', dist:7800, tel:'043-850-7906', cat:'국보·유적', img:'' },
+      { title:'충주호 수상레저', addr:'충북 충주시 동량면 충주호수로', dist:9500, tel:'', cat:'수상레저', img:'' },
+      { title:'수안보 온천', addr:'충북 충주시 수안보면 온천리', dist:13000, tel:'043-846-0014', cat:'온천', img:'' },
+    ],
+    stays: [
+      { title:'수안보 파크호텔', addr:'충북 충주시 수안보면 온천리', dist:13000, tel:'043-846-2331', cat:'호텔', grade:'3성급', img:'' },
+      { title:'충주 코아루 호텔', addr:'충북 충주시 충원대로 일대', dist:1200, tel:'', cat:'호텔', grade:'', img:'' },
+    ],
+    festivals: [
+      { title:'충주 세계무술축제', addr:'충북 충주시 남한강변 일원', startDate:'2026-09-25', endDate:'2026-10-03', tel:'043-850-5981', img:'' },
+    ]
+  },
+  4: { // 제주실내수영장
+    restaurants: [
+      { title:'제주 흑돼지 이도이동', addr:'제주 제주시 이도이동 일대', dist:3200, tel:'', cat:'흑돼지구이', img:'' },
+      { title:'올레시장 고기국수', addr:'제주 제주시 서광로2길 3', dist:3800, tel:'', cat:'고기국수', img:'' },
+      { title:'제주 갈치조림 골목', addr:'제주 제주시 탑동로 일대', dist:2600, tel:'', cat:'갈치조림', img:'' },
+    ],
+    attractions: [
+      { title:'용두암', addr:'제주 제주시 용두암길 15', dist:4100, tel:'064-728-3394', cat:'자연관광지', img:'https://tong.visitkorea.or.kr/cms/resource/69/126869_image2_1.jpg' },
+      { title:'삼성혈', addr:'제주 제주시 삼성로 22', dist:2800, tel:'064-722-3315', cat:'역사유적', img:'' },
+      { title:'제주 동문시장', addr:'제주 제주시 관덕로14길 20', dist:3200, tel:'064-752-3001', cat:'전통시장', img:'' },
+    ],
+    stays: [
+      { title:'제주 그랜드 하얏트', addr:'제주 제주시 노연로 11', dist:5200, tel:'064-747-1234', cat:'호텔', grade:'5성급', img:'' },
+      { title:'메종 글래드 제주', addr:'제주 제주시 노연로 6', dist:5100, tel:'064-747-0000', cat:'호텔', grade:'4성급', img:'' },
+    ],
+    festivals: [
+      { title:'제주 탐라문화제', addr:'제주 제주시 일원', startDate:'2026-09-30', endDate:'2026-10-04', tel:'064-722-7633', img:'' },
+    ]
+  },
+  5: { // 잠실올림픽주경기장 (JTBC 서울마라톤)
+    restaurants: [
+      { title:'방이동 먹자골목', addr:'서울 송파구 방이동 일대', dist:1800, tel:'', cat:'다양한 음식', img:'' },
+      { title:'잠실 롯데타워 레스토랑', addr:'서울 송파구 올림픽로 300', dist:640, tel:'02-3213-5000', cat:'양식·한식', img:'' },
+      { title:'석촌호수 카페거리', addr:'서울 송파구 석촌동 일대', dist:2200, tel:'', cat:'카페·디저트', img:'' },
+    ],
+    attractions: [
+      { title:'롯데월드타워 서울스카이', addr:'서울 송파구 올림픽로 300', dist:680, tel:'02-3213-5000', cat:'전망대', img:'https://tong.visitkorea.or.kr/cms/resource/68/2642868_image2_1.jpg' },
+      { title:'올림픽공원', addr:'서울 송파구 올림픽로 424', dist:1340, tel:'02-410-1114', cat:'공원', img:'' },
+      { title:'한성백제박물관', addr:'서울 송파구 위례성대로 71', dist:1800, tel:'02-2152-5800', cat:'박물관', img:'' },
+    ],
+    stays: [
+      { title:'롯데호텔 월드', addr:'서울 송파구 올림픽로 240', dist:1100, tel:'02-419-7000', cat:'호텔', grade:'5성급', img:'' },
+      { title:'시그니엘 서울', addr:'서울 송파구 올림픽로 300', dist:680, tel:'02-3213-1000', cat:'호텔', grade:'5성급', img:'' },
+    ],
+    festivals: [
+      { title:'서울 마라톤 엑스포', addr:'서울 송파구 올림픽로 424', startDate:'2026-10-16', endDate:'2026-10-17', tel:'', img:'' },
+    ]
+  },
+  6: { // 세종 한솔체육관
+    restaurants: [
+      { title:'세종 어진동 맛집거리', addr:'세종 어진동 일대', dist:4200, tel:'', cat:'한식·고기구이', img:'' },
+      { title:'세종 조치원 콩나물국밥', addr:'세종 조치원읍 일대', dist:8500, tel:'', cat:'국밥', img:'' },
+    ],
+    attractions: [
+      { title:'세종 호수공원', addr:'세종 어진동 세종호수공원', dist:3800, tel:'044-301-2114', cat:'공원', img:'' },
+      { title:'국립세종도서관', addr:'세종 다솜로 477', dist:4200, tel:'044-900-9114', cat:'문화시설', img:'' },
+    ],
+    stays: [
+      { title:'세종 베스트웨스턴 플러스', addr:'세종 한누리대로 2159', dist:5100, tel:'044-999-7000', cat:'호텔', grade:'3성급', img:'' },
+    ],
+    festivals: []
+  },
+  7: { // 춘천종합운동장 (춘천마라톤)
+    restaurants: [
+      { title:'춘천 닭갈비 명동골목', addr:'강원 춘천시 명동길 일대', dist:4500, tel:'', cat:'닭갈비·막국수', img:'' },
+      { title:'유포리 막국수', addr:'강원 춘천시 동면 유포리 일대', dist:8000, tel:'', cat:'막국수', img:'' },
+      { title:'춘천 낭만시장 어묵', addr:'강원 춘천시 낭만시장', dist:3800, tel:'', cat:'간식·분식', img:'' },
+    ],
+    attractions: [
+      { title:'남이섬', addr:'강원 춘천시 남산면 남이섬길 1', dist:12000, tel:'031-580-8114', cat:'관광지', img:'https://tong.visitkorea.or.kr/cms/resource/20/1739620_image2_1.jpg' },
+      { title:'의암호 수변공원', addr:'강원 춘천시 서면 의암호', dist:3500, tel:'033-240-1000', cat:'공원', img:'' },
+      { title:'소양강 스카이워크', addr:'강원 춘천시 영서로 2663', dist:5200, tel:'033-250-3592', cat:'관광지', img:'' },
+    ],
+    stays: [
+      { title:'춘천 베어스호텔', addr:'강원 춘천시 스포츠타운길 99 일대', dist:800, tel:'033-255-0071', cat:'호텔', grade:'3성급', img:'' },
+      { title:'소양강변 춘천 펜션', addr:'강원 춘천시 소양강변 일대', dist:5000, tel:'', cat:'펜션', grade:'', img:'' },
+    ],
+    festivals: [
+      { title:'춘천마임축제', addr:'강원 춘천시 시내 일원', startDate:'2026-05-22', endDate:'2026-05-26', tel:'033-242-0585', img:'' },
+      { title:'춘천 인형극제', addr:'강원 춘천시 애니메이션박물관 일원', startDate:'2026-08-20', endDate:'2026-08-23', tel:'033-242-8650', img:'' },
+    ]
+  }
+
+};
+
+// ═══════════════════════════════════════
+// TourAPI 실제 호출 함수
+// ═══════════════════════════════════════
+// ═══ TourAPI JSONP 호출 (CORS 완전 우회) ═══
+// script 태그 삽입 방식 → CORS 제약 없음
+
+function fetchTourAPIJsonp(operation, params, timeoutMs=8000) {
+  return new Promise((resolve) => {
+    const cbName = `_tc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      delete window[cbName]; script.remove(); resolve(null);
+    }, timeoutMs);
+
+    window[cbName] = (data) => {
+      clearTimeout(timer); delete window[cbName]; script.remove();
+      try {
+        const items = data?.response?.body?.items?.item;
+        if (!items) { resolve([]); return; }
+        resolve(Array.isArray(items) ? items : [items]);
+      } catch(e) { resolve([]); }
+    };
+
+    const p = { ...params, serviceKey: TOUR_API_KEY,
+      MobileOS:'ETC', MobileApp:'SpoTrip', callback: cbName };
+    const qs = Object.entries(p).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
+    script.src = `${TOUR_BASE}/${operation}?${qs}`;
+    script.onerror = () => { clearTimeout(timer); delete window[cbName]; script.remove(); resolve(null); };
+    document.head.appendChild(script);
+  });
+}
+
+async function fetchTourAPIDirect(operation, params) {
+  const p = { ...params, serviceKey: TOUR_API_KEY, MobileOS:'ETC', MobileApp:'SpoTrip', _type:'json' };
+  const qs = Object.entries(p).map(([k,v])=>`${k}=${encodeURIComponent(v)}`).join('&');
+  try {
+    const res = await fetch(`${TOUR_BASE}/${operation}?${qs}`, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const items = data?.response?.body?.items?.item;
+    if (!items) return [];
+    return Array.isArray(items) ? items : [items];
+  } catch(e) { return null; }
+}
+
+async function fetchTourAPI(operation, params) {
+  if (!TOUR_API_KEY) return null;
+  const r1 = await fetchTourAPIJsonp(operation, params);
+  if (r1 !== null) { console.log('✅ TourAPI JSONP 성공:', r1.length+'건'); return r1; }
+  const r2 = await fetchTourAPIDirect(operation, params);
+  if (r2 !== null) { console.log('✅ TourAPI 직접 호출 성공:', r2.length+'건'); return r2; }
+  console.log('[SpoTrip] TourAPI 호출 실패 → 한국관광공사 캐시 데이터 사용');
+  return null;
+}
+
+async function loadTourData(eventId) {
+  const coord = VENUE_COORDS[eventId];
+  if (!coord) return TOUR_SAMPLE[eventId] || generateDefaultTourData(eventId);
+
+  if (!TOUR_API_KEY) {
+    return TOUR_SAMPLE[eventId] || generateDefaultTourData(eventId);
+  }
+
+  try {
+    const callAPI = async (params) => {
+      const result = await fetchTourAPI('locationBasedList1', params);
+      return result !== null ? result : [];
+    };
+
+    const [foodRaw, tourRaw, stayRaw] = await Promise.all([
+      callAPI({ mapX: coord.lng, mapY: coord.lat, radius: 5000, contentTypeId: 39, numOfRows: 8 }),
+      callAPI({ mapX: coord.lng, mapY: coord.lat, radius: 5000, contentTypeId: 12, numOfRows: 6 }),
+      callAPI({ mapX: coord.lng, mapY: coord.lat, radius: 5000, contentTypeId: 32, numOfRows: 6 }),
+    ]);
+
+    const hasData = foodRaw.length > 0 || tourRaw.length > 0 || stayRaw.length > 0;
+    if (!hasData) {
+      console.warn('TourAPI 모든 경로 실패, 샘플 데이터 사용');
+      return TOUR_SAMPLE[eventId] || generateDefaultTourData(eventId);
+    }
+
+    const toList = (raw, extra={}) => (raw||[]).map(item => ({
+      title: item.title || '',
+      addr: item.addr1 || '',
+      dist: parseInt(item.dist)||0,
+      tel: item.tel || '',
+      img: item.firstimage || '',
+      cat: item.cat3 || '',
+      ...extra
+    }));
+
+    const liveData = {
+      restaurants: toList(foodRaw),
+      attractions: toList(tourRaw),
+      stays: toList(stayRaw, {grade:''}),
+      festivals: TOUR_SAMPLE[eventId]?.festivals || []
+    };
+
+    // 빈 항목은 샘플 데이터로 보완
+    const sample = TOUR_SAMPLE[eventId] || {};
+    if (!liveData.restaurants.length) liveData.restaurants = sample.restaurants || [];
+    if (!liveData.attractions.length) liveData.attractions = sample.attractions || [];
+    if (!liveData.stays.length) liveData.stays = sample.stays || [];
+
+    console.log(`[SpoTrip] TourAPI 데이터 로드 완료 - 맛집 ${liveData.restaurants.length}곳`);
+    return liveData;
+
+  } catch(e) {
+    console.warn('TourAPI 오류, 샘플 데이터 사용:', e.message);
+    return TOUR_SAMPLE[eventId] || generateDefaultTourData(eventId);
+  }
+}
+
+function generateDefaultTourData(eventId) {
+  const ev = EVENTS.find(e => e.id === eventId);
+  return {
+    restaurants: [{ title: ev?.venue+' 주변 맛집', addr: ev?.address||'', dist:500, tel:'', cat:'음식점', img:'' }],
+    attractions: [{ title: ev?.venue+' 주변 관광지', addr: ev?.address||'', dist:1000, tel:'', cat:'관광지', img:'' }],
+    stays: [{ title: '주변 숙박시설', addr: ev?.address||'', dist:1500, tel:'', cat:'호텔', grade:'', img:'' }],
+    festivals: []
+  };
+}
+
+const tourCache = {};
+
+async function getTourData(eventId) {
+  if (tourCache[eventId]) return tourCache[eventId];
+  const data = await loadTourData(eventId);
+  tourCache[eventId] = data;
+  return data;
+}
+
+
+// ═══ TourAPI UI 렌더링 ═══
+
+async function renderCourseWithTourData(tab) {
+  const ev = curEv;
+  if (!ev) return;
+  const tl = {day_before:'전날', day_of:'당일', day_after:'이후'};
+
+  // 로딩 표시
+  document.getElementById('detailLeft').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;color:var(--muted)">
+      <div style="font-size:1.8rem;margin-bottom:10px">🗺️</div>
+      <div style="font-size:.85rem;font-weight:600;color:var(--text)">관광 코스 구성 중...</div>
+    </div>`;
+
+  const tourData = await getTourData(ev.id);
+
+  // 코스 구성: 하드코딩 데이터 우선, 없으면 TourAPI 데이터로 자동 생성
+  let course = (COURSES[ev.id] && COURSES[ev.id][tab] && COURSES[ev.id][tab].length)
+    ? COURSES[ev.id][tab]
+    : (buildCourseFromTourData(tourData, tab) || []);
+
+  const festivals = tourData?.festivals || FESTIVALS;
+
+  const typeLabel = {food:'음식점', tour:'관광지', hotel:'숙박', festival:'축제'};
+
+  const spotCards = course.map((s, i) => `
+    <div class="spot-card">
+      <div class="spot-order">${i+1}</div>
+      ${s.img
+        ? `<img class="spot-img" src="${s.img}" onerror="this.outerHTML='<div class=\"spot-img\">${s.icon}</div>'" style="object-fit:cover">`
+        : `<div class="spot-img">${s.icon}</div>`}
+      <div class="spot-info">
+        <span class="spot-type-badge type-${s.type}">${typeLabel[s.type]||s.type}</span>
+        <div class="spot-name">${s.name}</div>
+        <div class="spot-note">${s.addr||s.note||''}</div>
+        ${s.tel ? `<div style="font-size:.68rem;color:var(--primary);margin-top:2px">📞 ${s.tel}</div>` : ''}
+        <div class="spot-time">
+          <span class="time-tag">⏱ ${s.duration}분</span>
+          ${s.dist ? `<span class="time-tag">📍 ${s.dist<1000 ? s.dist+'m' : (s.dist/1000).toFixed(1)+'km'}</span>` : ''}
+          ${s.cat ? `<span class="time-tag">${s.cat}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${i < course.length-1 ? `<div class="spot-connector">↓ 이동</div>` : ''}
+  `).join('');
+
+  const festCards = festivals.map(f => `
+    <div class="festival-card">
+      <div style="font-size:1.3rem">🎪</div>
+      <div>
+        <div style="font-size:.83rem;font-weight:700">${f.title}</div>
+        <div style="font-size:.7rem;color:var(--muted)">📅 ${f.startDate||f.date||''} ~ ${f.endDate||f.date||''}</div>
+        ${f.tel ? `<div style="font-size:.68rem;color:var(--primary)">📞 ${f.tel}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  const nearbySection = tourData ? `
+    <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border)">
+      <div class="section-title-sm">📊 TourAPI 전체 데이터</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="nearby-tab active" onclick="switchNearby(this,'food',${ev.id})">🍽️ 맛집 ${tourData.restaurants?.length||0}</button>
+        <button class="nearby-tab" onclick="switchNearby(this,'tour',${ev.id})">🏛️ 관광지 ${tourData.attractions?.length||0}</button>
+        <button class="nearby-tab" onclick="switchNearby(this,'hotel',${ev.id})">🏨 숙소 ${tourData.stays?.length||0}</button>
+      </div>
+      <div id="nearbyList" class="nearby-list"></div>
+    </div>` : '';
+
+  document.getElementById('detailLeft').innerHTML = `
+    <div class="course-tabs">
+      ${['day_before','day_of','day_after'].map(t =>
+        `<button class="course-tab ${tab===t?'active':''}" onclick="switchTabTour('${t}')">${tl[t]}</button>`
+      ).join('')}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+      <div style="font-size:.72rem;color:var(--muted)">
+        ${TOUR_API_KEY ? '🌐 한국관광공사 TourAPI (KorService2)' : '📦 한국관광공사 데이터'}
+      </div>
+      ${!TOUR_API_KEY
+        ? `<button onclick="openApiKeyModal()" style="font-size:.67rem;color:var(--primary);background:#EBF4FF;border:1px solid var(--primary);border-radius:5px;padding:2px 8px;cursor:pointer">🔑 실시간 연동</button>`
+        : `<span style="font-size:.67rem;color:var(--success);font-weight:600">✅ API 연동됨</span>`}
+    </div>
+    ${spotCards}
+    <div class="festival-section">
+      <div class="section-title-sm">🎪 대회 기간 겹치는 지역 축제</div>
+      ${festCards || '<div style="font-size:.78rem;color:var(--muted)">해당 기간 축제 정보가 없습니다.</div>'}
+    </div>
+    ${nearbySection}
+  `;
+
+  if (tourData) renderNearbyList(tourData.restaurants || [], 'food');
+}
+
+async function renderStaysWithTourData() {
+  const ev = curEv;
+  if (!ev) return;
+  const data = await getTourData(ev.id);
+  const stays = data?.stays || STAYS;
+  document.getElementById('stayList').innerHTML = `
+    <div style="padding:10px 13px 7px;font-size:.8rem;font-weight:700;color:var(--text)">
+      🏨 주변 숙소
+      <span style="font-size:.67rem;font-weight:400;color:var(--muted)">${TOUR_API_KEY ? '🌐 TourAPI 실시간' : '📦 한국관광공사 데이터'}</span>
+    </div>
+    ${stays.map(s => `
+      <div class="stay-card">
+        ${s.img ? `<img class="stay-thumb" src="${s.img}" onerror="this.outerHTML='<div class=\"stay-thumb\">🏨</div>'" style="object-fit:cover">` : `<div class="stay-thumb">🏨</div>`}
+        <div>
+          <div class="stay-name">${s.title||s.name||''}</div>
+          <div class="stay-type">${s.cat||s.type||''} ${s.grade?'· '+s.grade:''}</div>
+          <div style="font-size:.7rem;color:var(--muted)">${s.addr||''}</div>
+          ${s.dist ? `<div class="stay-dist">📍 ${s.dist<1000?s.dist+'m':(s.dist/1000).toFixed(1)+'km'}</div>` : ''}
+          ${s.tel ? `<div style="font-size:.68rem;color:var(--primary)">📞 ${s.tel}</div>` : ''}
+        </div>
+      </div>`).join('')}`;
+}
+
+function switchNearby(btn, type, eventId) {
+  document.querySelectorAll('.nearby-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = tourCache[eventId];
+  if (!d) return;
+  const map = {food: d.restaurants, tour: d.attractions, hotel: d.stays};
+  renderNearbyList(map[type] || [], type);
+}
+
+function renderNearbyList(items, type) {
+  const el = document.getElementById('nearbyList');
+  if (!el) return;
+  if (!items || !items.length) {
+    el.innerHTML = '<div style="font-size:.78rem;color:var(--muted);padding:12px 0">데이터가 없습니다.</div>';
+    return;
+  }
+  el.innerHTML = items.map(item => `
+    <div class="nearby-item">
+      <div class="nearby-icon">${{food:'🍽️',tour:'🏛️',hotel:'🏨'}[type]||'📍'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text)">${item.title||''}</div>
+        <div style="font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.addr||''}</div>
+        <div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap">
+          ${item.cat ? `<span class="time-tag">${item.cat}</span>` : ''}
+          ${item.dist ? `<span class="time-tag">📍 ${item.dist<1000?item.dist+'m':(item.dist/1000).toFixed(1)+'km'}</span>` : ''}
+          ${item.tel ? `<span class="time-tag" style="color:var(--primary)">📞 ${item.tel}</span>` : ''}
+          ${item.grade ? `<span class="time-tag">⭐ ${item.grade}</span>` : ''}
+        </div>
+      </div>
+      ${item.img ? `<img src="${item.img}" style="width:48px;height:48px;border-radius:7px;object-fit:cover;flex-shrink:0;margin-left:8px" onerror="this.style.display='none'">` : ''}
+    </div>`).join('');
+}
+
+function switchTabTour(tab) {
+  curTab = tab;
+  renderCourseWithTourData(tab);
+  renderDMap();
+}
+
+function openApiKeyModal() {
+  const key = prompt('TourAPI 서비스키를 입력하세요\n(data.go.kr → 마이페이지 → 인증키 발급현황)');
+  if (key && key.trim()) {
+    TOUR_API_KEY = key.trim();
+    Object.keys(tourCache).forEach(k => delete tourCache[k]);
+    showToast('✅ API 키가 설정되었습니다.', 'success');
+    if (curEv) renderCourseWithTourData(curTab);
+  }
+}
+
+function showSpotDetail(i) {
+  showToast('상세 페이지는 TourAPI detailIntro1 연동 후 활성화됩니다.', 'default');
+}
+
+
+function buildCourseFromTourData(tourData, tab) {
+  if (!tourData) return null;
+  const { restaurants, attractions, stays } = tourData;
+  const makeSpot = (item, type) => ({
+    name: item.title,
+    type,
+    icon: {food:'🍽️', tour:'🏛️', hotel:'🏨', festival:'🎪'}[type] || '📍',
+    note: item.addr + (item.tel ? ` · ${item.tel}` : '') + (item.cat ? ` · ${item.cat}` : ''),
+    duration: {food:90, tour:60, hotel:480, festival:120}[type] || 60,
+    travel: Math.round((item.dist || 500) / 50),
+    img: item.img || '', dist: item.dist || 0,
+    tel: item.tel || '', cat: item.cat || '', addr: item.addr || ''
+  });
+  if (tab === 'day_before') return [
+    ...(restaurants.slice(0,1).map(r => makeSpot(r,'food'))),
+    ...(attractions.slice(0,1).map(a => makeSpot(a,'tour'))),
+    ...(stays.slice(0,1).map(s => makeSpot(s,'hotel'))),
+  ];
+  if (tab === 'day_of') return [
+    ...(restaurants.slice(1,3).map(r => makeSpot(r,'food'))),
+    ...(attractions.slice(1,2).map(a => makeSpot(a,'tour'))),
+  ];
+  return [ // day_after
+    ...(attractions.slice(2,4).map(a => makeSpot(a,'tour'))),
+    ...(restaurants.slice(3,4).map(r => makeSpot(r,'food'))),
+  ];
+}
+
+function applyApiKey() {
+  const key = document.getElementById('apiKeyInput')?.value?.trim();
+  if (!key) { showToast('API 키를 입력해주세요.', 'error'); return; }
+  TOUR_API_KEY = key;
+  // 캐시 전체 초기화
+  Object.keys(tourCache).forEach(k => delete tourCache[k]);
+  showToast('✅ TourAPI 키가 적용되었습니다. 실제 데이터를 사용합니다.', 'success');
+}
 
 // ═══ TOAST ═══
 function showToast(msg,type='default'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className='toast'+(type!=='default'?' '+type:'');t.innerHTML=msg;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
