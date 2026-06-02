@@ -451,6 +451,30 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 .nearby-icon{font-size:1.2rem;flex-shrink:0;width:28px;text-align:center;margin-top:2px}
 .nearby-list{max-height:280px;overflow-y:auto;padding-right:4px}
 
+
+/* ── PROFILE & RL ── */
+.profile-modal{width:500px;max-height:90vh;overflow-y:auto}
+.profile-section{margin-bottom:18px}
+.profile-section h3{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.profile-chips{display:flex;flex-wrap:wrap;gap:7px}
+.profile-chip{padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;background:var(--white)}
+.profile-chip:hover{border-color:var(--primary);color:var(--primary);background:#EBF4FF}
+.profile-chip.selected{border-color:var(--primary);background:var(--primary);color:var(--white)}
+.profile-chip.selected-orange{border-color:var(--orange);background:var(--orange);color:var(--white)}
+.rl-bar-wrap{background:var(--light);border-radius:6px;height:8px;overflow:hidden;margin-top:4px}
+.rl-bar{height:100%;border-radius:6px;transition:width .6s ease}
+.rl-category-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.rl-category-item:last-child{border-bottom:none}
+.rl-label{font-size:.78rem;font-weight:600;color:var(--text);min-width:80px}
+.rl-score{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);min-width:36px;text-align:right}
+.personalized-badge{display:inline-flex;align-items:center;gap:4px;font-size:.63rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#7C3AED}
+.reward-toast{position:fixed;bottom:60px;right:20px;z-index:700;font-size:.75rem;font-weight:700;padding:6px 12px;border-radius:20px;background:#7C3AED;color:var(--white);animation:slideUp .3s ease;pointer-events:none}
+.profile-summary{background:linear-gradient(135deg,rgba(139,92,246,.08) 0%,rgba(27,79,114,.08) 100%);border:1.5px solid rgba(139,92,246,.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.profile-avatar-lg{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,var(--primary));color:var(--white);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.rl-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:16px}
+.rl-panel h3{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.episodes-counter{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:500;color:var(--primary)}
+
 </style>
 </head>
 <body>
@@ -766,6 +790,46 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
       <div><div class="my-name" id="myName">김스포츠</div><div class="my-email" id="myEmail">user@sportrip.kr</div></div>
       <div class="my-fav-count"><div class="my-fav-num" id="myFavNum">0</div><div class="my-fav-label">즐겨찾기</div></div>
     </div>
+    <!-- 프로필 요약 -->
+    <div id="profileSummaryCard" style="display:none;margin-bottom:18px">
+      <div class="profile-summary">
+        <div class="profile-avatar-lg" id="profileAvatarIcon">🎯</div>
+        <div style="flex:1">
+          <div style="font-size:.85rem;font-weight:700;color:var(--text)" id="profileSummaryText">프로필 미설정</div>
+          <div style="font-size:.73rem;color:var(--muted);margin-top:2px" id="profileStyleText"></div>
+        </div>
+        <button onclick="openProfileModal()" style="font-size:.72rem;color:var(--primary);background:#EBF4FF;border:1px solid var(--primary);border-radius:6px;padding:4px 10px;cursor:pointer">수정</button>
+      </div>
+    </div>
+    <div id="noProfileCard" style="margin-bottom:18px">
+      <div style="background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(27,79,114,.08));border:1.5px dashed rgba(139,92,246,.3);border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:6px">🎯</div>
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px">맞춤 추천을 받아보세요</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:12px">나이·성별·가족구성·여행성향을 입력하면<br>AI가 딱 맞는 코스를 추천합니다</div>
+        <button onclick="openProfileModal()" style="padding:8px 20px;background:#7C3AED;color:var(--white);border:none;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer">🎯 프로필 설정하기</button>
+      </div>
+    </div>
+
+    <!-- RL 학습 현황 -->
+    <div id="rlStatusCard" style="display:none;margin-bottom:18px">
+      <div class="rl-panel">
+        <h3>🤖 AI 학습 현황 <span class="personalized-badge">강화학습</span></h3>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;padding:10px;background:var(--light);border-radius:8px">
+          <div style="text-align:center">
+            <div class="episodes-counter" id="episodeCount">0</div>
+            <div style="font-size:.68rem;color:var(--muted)">학습 횟수</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:4px">누적 보상 점수</div>
+            <div class="rl-bar-wrap"><div class="rl-bar" id="totalRewardBar" style="width:0%;background:linear-gradient(90deg,#7C3AED,var(--primary))"></div></div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:2px"><span id="totalRewardScore">0</span>점 / 100점</div>
+          </div>
+        </div>
+        <div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px">📊 카테고리별 선호도 학습 현황</div>
+        <div id="rlCategoryBars"></div>
+      </div>
+    </div>
+
     <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:11px">⭐ 즐겨찾기한 대회</div>
     <div id="favList"></div>
   </div>
@@ -823,6 +887,7 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
         <button class="admin-nav-item" onclick="showAdminPanel('courses',this)"><span class="admin-nav-icon">🗺️</span>코스 관리</button>
         <button class="admin-nav-item" onclick="showAdminPanel('users',this)"><span class="admin-nav-icon">👥</span>사용자 관리</button>
         <div class="admin-nav-section">시스템</div>
+        <button class="admin-nav-item" onclick="showAdminPanel('rl',this)"><span class="admin-nav-icon">🤖</span>RL 대시보드</button>
         <button class="admin-nav-item" onclick="showAdminPanel('api',this)"><span class="admin-nav-icon">🔌</span>API 모니터</button>
         <button class="admin-nav-item" onclick="showAdminPanel('settings',this)"><span class="admin-nav-icon">⚙️</span>설정</button>
         <div style="padding:12px 7px;border-top:1px solid rgba(255,255,255,.1);margin-top:14px">
@@ -862,6 +927,76 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
           <table class="data-table"><thead><tr><th>사용자</th><th>이메일</th><th>역할</th><th>가입일</th><th>즐겨찾기</th><th>상태</th><th>관리</th></tr></thead><tbody id="adminUsersTable"></tbody></table>
         </div>
       </div>
+      <div class="admin-panel" id="panel-rl">
+        <div class="admin-header"><h1>🤖 강화학습 대시보드</h1><p>사용자 행동 기반 추천 AI 학습 현황을 모니터링합니다</p></div>
+        <div class="stats-grid-4" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat-card"><div class="stat-label-sm">총 학습 세션</div><div class="stat-value-lg" id="rl-total-sessions">0</div><div class="stat-change">사용자 상호작용</div><div class="stat-icon-bg">🔄</div></div>
+          <div class="stat-card"><div class="stat-label-sm">누적 보상</div><div class="stat-value-lg" id="rl-total-reward">0</div><div class="stat-change">클릭·즐겨찾기·공유</div><div class="stat-icon-bg">⭐</div></div>
+          <div class="stat-card"><div class="stat-label-sm">활성 프로필</div><div class="stat-value-lg" id="rl-active-profiles">0</div><div class="stat-change">개인화 설정 완료</div><div class="stat-icon-bg">👤</div></div>
+          <div class="stat-card"><div class="stat-label-sm">추천 정확도</div><div class="stat-value-lg" id="rl-accuracy">-</div><div class="stat-change">클릭률 기반 추정</div><div class="stat-icon-bg">🎯</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div class="rl-panel">
+            <h3>📐 알고리즘 설정</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><label class="form-label">학습률 (α) <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--primary)" id="alphaVal">0.15</span></label>
+                <input type="range" min="0.01" max="0.5" step="0.01" value="0.15" style="width:100%" oninput="RL_CONFIG.alpha=parseFloat(this.value);document.getElementById('alphaVal').textContent=this.value"></div>
+              <div><label class="form-label">탐색률 (ε) <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--primary)" id="epsilonVal">0.20</span></label>
+                <input type="range" min="0.01" max="0.5" step="0.01" value="0.20" style="width:100%" oninput="RL_CONFIG.epsilon=parseFloat(this.value);document.getElementById('epsilonVal').textContent=this.value"></div>
+              <div><label class="form-label">감가율 (γ) <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--primary)" id="gammaVal">0.90</span></label>
+                <input type="range" min="0.5" max="0.99" step="0.01" value="0.90" style="width:100%" oninput="RL_CONFIG.gamma=parseFloat(this.value);document.getElementById('gammaVal').textContent=this.value"></div>
+            </div>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:10px;line-height:1.6">
+              <strong>α</strong>: 높을수록 새 경험을 더 빠르게 반영<br>
+              <strong>ε</strong>: 높을수록 새로운 추천을 더 많이 탐색<br>
+              <strong>γ</strong>: 미래 보상을 얼마나 중요하게 볼지
+            </div>
+          </div>
+          <div class="rl-panel">
+            <h3>🎁 보상 함수 설정</h3>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.8rem">📍 스팟 클릭</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="number" value="1" min="0" max="10" style="width:50px;padding:3px 6px;border:1.5px solid var(--border);border-radius:5px;font-size:.78rem" oninput="REWARD.click=parseInt(this.value)||1">
+                  <span style="font-size:.72rem;color:var(--muted)">점</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.8rem">❤️ 즐겨찾기</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="number" value="3" min="0" max="10" style="width:50px;padding:3px 6px;border:1.5px solid var(--border);border-radius:5px;font-size:.78rem" oninput="REWARD.favorite=parseInt(this.value)||3">
+                  <span style="font-size:.72rem;color:var(--muted)">점</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:.8rem">🔗 공유</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="number" value="5" min="0" max="10" style="width:50px;padding:3px 6px;border:1.5px solid var(--border);border-radius:5px;font-size:.78rem" oninput="REWARD.share=parseInt(this.value)||5">
+                  <span style="font-size:.72rem;color:var(--muted)">점</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+                <span style="font-size:.8rem">⏱ 체류시간 (초당)</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="number" value="0.1" min="0" max="1" step="0.1" style="width:50px;padding:3px 6px;border:1.5px solid var(--border);border-radius:5px;font-size:.78rem" oninput="REWARD.dwell=parseFloat(this.value)||0.1">
+                  <span style="font-size:.72rem;color:var(--muted)">점</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="resetRL()" style="margin-top:10px;width:100%;padding:7px;background:var(--light);border:1.5px solid var(--border);border-radius:7px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer">🔄 학습 초기화</button>
+          </div>
+        </div>
+        <div class="rl-panel">
+          <h3>📊 프로필별 Q-테이블 현황</h3>
+          <div id="rlQTable" style="overflow-x:auto"></div>
+        </div>
+        <div class="rl-panel">
+          <h3>📈 학습 이력 (최근 20회)</h3>
+          <div id="rlHistory" style="max-height:200px;overflow-y:auto"></div>
+        </div>
+      </div>
+
       <div class="admin-panel" id="panel-api">
         <div class="admin-header"><h1>🔌 TourAPI 모니터</h1><p>API 호출 현황 및 캐시 상태를 확인합니다</p></div>
         <div class="stats-grid-4" style="grid-template-columns:repeat(3,1fr)">
@@ -965,6 +1100,74 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
       <div class="p-step" id="ps4"><span class="p-step-icon">🤖</span>GPT-4o-mini 코스 생성</div>
       <div class="p-step" id="ps5"><span class="p-step-icon">✅</span>저장 완료</div>
     </div>
+  </div>
+</div>
+
+
+<!-- ═══ PROFILE MODAL ═══ -->
+<div class="overlay" id="profileOverlay">
+  <div class="modal-box profile-modal">
+    <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:1.8rem">🎯</div>
+      <div class="modal-title" style="text-align:center;margin-top:6px">맞춤 추천 설정</div>
+      <div class="modal-sub" style="text-align:center">프로필을 설정하면 AI가 딱 맞는 코스를 추천합니다</div>
+    </div>
+
+    <!-- 나이대 -->
+    <div class="profile-section">
+      <h3>🎂 나이대</h3>
+      <div class="profile-chips" id="chipAge">
+        <div class="profile-chip" onclick="selectChip('age','10대',this)">10대</div>
+        <div class="profile-chip" onclick="selectChip('age','20대',this)">20대</div>
+        <div class="profile-chip" onclick="selectChip('age','30대',this)">30대</div>
+        <div class="profile-chip" onclick="selectChip('age','40대',this)">40대</div>
+        <div class="profile-chip" onclick="selectChip('age','50대',this)">50대</div>
+        <div class="profile-chip" onclick="selectChip('age','60대+',this)">60대+</div>
+      </div>
+    </div>
+
+    <!-- 성별 -->
+    <div class="profile-section">
+      <h3>👤 성별</h3>
+      <div class="profile-chips" id="chipGender">
+        <div class="profile-chip" onclick="selectChip('gender','남성',this)">남성</div>
+        <div class="profile-chip" onclick="selectChip('gender','여성',this)">여성</div>
+        <div class="profile-chip" onclick="selectChip('gender','무관',this)">무관</div>
+      </div>
+    </div>
+
+    <!-- 동반 유형 -->
+    <div class="profile-section">
+      <h3>👨‍👩‍👧 동반 유형</h3>
+      <div class="profile-chips" id="chipFamily">
+        <div class="profile-chip" onclick="selectChip('family','혼자',this)">🧍 혼자</div>
+        <div class="profile-chip" onclick="selectChip('family','커플',this)">💑 커플</div>
+        <div class="profile-chip" onclick="selectChip('family','가족(유아)',this)">👶 가족(유아)</div>
+        <div class="profile-chip" onclick="selectChip('family','가족(초등)',this)">🧒 가족(초등)</div>
+        <div class="profile-chip" onclick="selectChip('family','친구그룹',this)">👫 친구그룹</div>
+        <div class="profile-chip" onclick="selectChip('family','시니어',this)">🧓 시니어</div>
+      </div>
+    </div>
+
+    <!-- 여행 성향 (다중선택) -->
+    <div class="profile-section">
+      <h3>✈️ 여행 성향 <span style="font-size:.7rem;font-weight:400;color:var(--muted)">(복수 선택 가능)</span></h3>
+      <div class="profile-chips" id="chipStyle">
+        <div class="profile-chip" onclick="toggleStyle('액티브',this)">🏃 액티브</div>
+        <div class="profile-chip" onclick="toggleStyle('문화역사',this)">🏛️ 문화·역사</div>
+        <div class="profile-chip" onclick="toggleStyle('맛집탐방',this)">🍽️ 맛집탐방</div>
+        <div class="profile-chip" onclick="toggleStyle('힐링휴양',this)">🌿 힐링·휴양</div>
+        <div class="profile-chip" onclick="toggleStyle('쇼핑',this)">🛍️ 쇼핑</div>
+        <div class="profile-chip" onclick="toggleStyle('야경카페',this)">☕ 야경·카페</div>
+      </div>
+    </div>
+
+    <div style="background:#F3E8FF;border-radius:9px;padding:10px 13px;font-size:.76rem;color:#5B21B6;margin-bottom:14px">
+      🤖 <strong>강화학습 안내:</strong> 설정 후 코스를 클릭하거나 즐겨찾기할수록 AI가 취향을 학습해 점점 더 정확한 추천을 합니다.
+    </div>
+
+    <button class="btn-primary-full" onclick="saveProfile()" style="margin-top:4px">✅ 프로필 저장 & 추천 시작</button>
   </div>
 </div>
 
@@ -1871,6 +2074,424 @@ function applyApiKey() {
   Object.keys(tourCache).forEach(k => delete tourCache[k]);
   showToast('✅ TourAPI 키가 적용되었습니다. 실제 데이터를 사용합니다.', 'success');
 }
+
+
+// ═══════════════════════════════════════
+// 강화학습 (Q-Learning) + 프로필 추천 시스템
+// ═══════════════════════════════════════
+
+// ── 설정 ──
+const RL_CONFIG = { alpha: 0.15, gamma: 0.90, epsilon: 0.20 };
+const REWARD = { click: 1, favorite: 3, share: 5, dwell: 0.1 };
+
+// ── 카테고리 정의 ──
+const CATEGORIES = ['관광지','음식점','숙박','문화역사','자연','쇼핑','액티브','힐링','카페'];
+
+// ── 프로필 → 초기 Q값 매핑 ──
+const PROFILE_PRIORS = {
+  age: {
+    '10대': {액티브:0.8, 쇼핑:0.7, 카페:0.6, 문화역사:0.3},
+    '20대': {카페:0.8, 쇼핑:0.7, 액티브:0.6, 야경:0.7},
+    '30대': {음식점:0.7, 자연:0.6, 문화역사:0.5, 숙박:0.6},
+    '40대': {문화역사:0.8, 자연:0.7, 음식점:0.7, 관광지:0.6},
+    '50대': {자연:0.8, 문화역사:0.8, 힐링:0.7, 관광지:0.6},
+    '60대+': {자연:0.9, 힐링:0.8, 문화역사:0.7, 관광지:0.6},
+  },
+  gender: {
+    '남성': {액티브:0.1, 관광지:0.05},
+    '여성': {카페:0.1, 쇼핑:0.1, 힐링:0.05},
+    '무관': {}
+  },
+  family: {
+    '혼자':      {액티브:0.7, 카페:0.6, 힐링:0.5},
+    '커플':      {카페:0.8, 자연:0.7, 음식점:0.7, 힐링:0.6},
+    '가족(유아)': {자연:0.8, 힐링:0.7, 관광지:0.5, 액티브:-0.3},
+    '가족(초등)': {액티브:0.7, 자연:0.7, 관광지:0.6},
+    '친구그룹':  {액티브:0.7, 쇼핑:0.6, 음식점:0.7, 카페:0.5},
+    '시니어':    {자연:0.8, 힐링:0.8, 문화역사:0.7, 액티브:-0.4},
+  },
+  style: {
+    '액티브':   {액티브:0.9, 자연:0.6},
+    '문화역사': {문화역사:0.9, 관광지:0.7},
+    '맛집탐방': {음식점:0.9, 카페:0.5},
+    '힐링휴양': {힐링:0.9, 자연:0.7, 숙박:0.6},
+    '쇼핑':     {쇼핑:0.9, 카페:0.5},
+    '야경카페': {카페:0.9, 힐링:0.5},
+  }
+};
+
+// ── 스팟 → 카테고리 매핑 ──
+function spotToCategories(spot) {
+  const cats = [];
+  const t = (spot.type||'');
+  const c = (spot.cat||'');
+  const n = (spot.name||'').toLowerCase();
+  if (t==='food') { cats.push('음식점'); if (c.includes('카페')||n.includes('카페')) cats.push('카페'); if (c.includes('전통')||c.includes('한정식')) cats.push('문화역사'); }
+  if (t==='tour') { cats.push('관광지'); if (c.includes('자연')||c.includes('공원')||c.includes('해변')) cats.push('자연'); if (c.includes('문화')||c.includes('유산')||c.includes('박물')||c.includes('궁')) cats.push('문화역사'); if (c.includes('레포츠')||c.includes('레저')||c.includes('액티브')) cats.push('액티브'); if (c.includes('온천')||c.includes('힐링')||c.includes('휴양')) cats.push('힐링'); }
+  if (t==='hotel') { cats.push('숙박'); if (c.includes('리조트')||c.includes('펜션')) cats.push('힐링'); }
+  if (t==='festival') { cats.push('관광지'); cats.push('문화역사'); }
+  return cats.length ? cats : ['관광지'];
+}
+
+// ── Q-테이블 (sessionStorage 영속) ──
+function loadQTable() {
+  try { return JSON.parse(sessionStorage.getItem('sptrip_qtable') || 'null') || initQTable(); }
+  catch(e) { return initQTable(); }
+}
+function saveQTable(q) {
+  try { sessionStorage.setItem('sptrip_qtable', JSON.stringify(q)); } catch(e){}
+}
+function initQTable() {
+  const q = {};
+  CATEGORIES.forEach(c => q[c] = 0.5);
+  return q;
+}
+
+// ── 프로필 상태 ──
+let USER_PROFILE = { age:'', gender:'', family:'', styles:[] };
+let Q_TABLE = loadQTable();
+let RL_HISTORY = JSON.parse(sessionStorage.getItem('sptrip_rl_history')||'[]');
+let RL_EPISODES = parseInt(sessionStorage.getItem('sptrip_episodes')||'0');
+let TOTAL_REWARD = parseFloat(sessionStorage.getItem('sptrip_reward')||'0');
+let DWELL_START = null;
+
+// ── 초기 Q값을 프로필에 맞게 조정 ──
+function applyProfilePriors(profile) {
+  const q = initQTable();
+  const apply = (map, key) => {
+    const biases = map[key] || {};
+    Object.entries(biases).forEach(([cat, bias]) => {
+      if (q[cat] !== undefined) q[cat] = Math.min(1, Math.max(0, q[cat] + bias));
+    });
+  };
+  apply(PROFILE_PRIORS.age, profile.age);
+  apply(PROFILE_PRIORS.gender, profile.gender);
+  apply(PROFILE_PRIORS.family, profile.family);
+  (profile.styles||[]).forEach(s => apply(PROFILE_PRIORS.style, s));
+  return q;
+}
+
+// ── Q-Learning 업데이트 ──
+function qlUpdate(cats, reward) {
+  cats.forEach(cat => {
+    if (Q_TABLE[cat] === undefined) Q_TABLE[cat] = 0.5;
+    const maxNext = Math.max(...CATEGORIES.map(c => Q_TABLE[c]||0.5));
+    Q_TABLE[cat] = Q_TABLE[cat] + RL_CONFIG.alpha * (reward + RL_CONFIG.gamma * maxNext - Q_TABLE[cat]);
+    Q_TABLE[cat] = Math.max(0, Math.min(1, Q_TABLE[cat]));
+  });
+  RL_EPISODES++;
+  TOTAL_REWARD += reward;
+  const entry = { ep: RL_EPISODES, cats: cats.join(','), reward, time: new Date().toLocaleTimeString() };
+  RL_HISTORY.unshift(entry);
+  if (RL_HISTORY.length > 20) RL_HISTORY.pop();
+  saveQTable(Q_TABLE);
+  sessionStorage.setItem('sptrip_rl_history', JSON.stringify(RL_HISTORY));
+  sessionStorage.setItem('sptrip_episodes', RL_EPISODES);
+  sessionStorage.setItem('sptrip_reward', TOTAL_REWARD);
+  showRewardFeedback(reward);
+  updateRLUI();
+}
+
+// ── 스팟 점수 계산 ──
+function scoreSpot(spot) {
+  const cats = spotToCategories(spot);
+  // ε-greedy: 일정 확률로 탐색
+  if (Math.random() < RL_CONFIG.epsilon) return Math.random();
+  return cats.reduce((sum, c) => sum + (Q_TABLE[c]||0.5), 0) / cats.length;
+}
+
+// ── 프로필 기반 코스 정렬 ──
+function personalizeSpots(spots) {
+  if (!USER_PROFILE.age && !USER_PROFILE.family) return spots;
+  return [...spots].sort((a, b) => scoreSpot(b) - scoreSpot(a));
+}
+
+// ── 보상 피드백 토스트 ──
+function showRewardFeedback(reward) {
+  const t = document.createElement('div');
+  t.className = 'reward-toast';
+  t.textContent = `+${reward.toFixed(1)}점 🤖 AI 학습 중`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2000);
+}
+
+// ── RL UI 업데이트 ──
+function updateRLUI() {
+  // 마이페이지
+  const epEl = document.getElementById('episodeCount');
+  const barEl = document.getElementById('totalRewardBar');
+  const scoreEl = document.getElementById('totalRewardScore');
+  const catEl = document.getElementById('rlCategoryBars');
+  if (epEl) epEl.textContent = RL_EPISODES;
+  if (barEl) barEl.style.width = Math.min(100, TOTAL_REWARD) + '%';
+  if (scoreEl) scoreEl.textContent = TOTAL_REWARD.toFixed(1);
+  if (catEl) {
+    const sorted = CATEGORIES.map(c => ({c, v: Q_TABLE[c]||0.5})).sort((a,b)=>b.v-a.v);
+    catEl.innerHTML = sorted.map(({c,v}) => `
+      <div class="rl-category-item">
+        <div class="rl-label">${c}</div>
+        <div style="flex:1"><div class="rl-bar-wrap"><div class="rl-bar" style="width:${(v*100).toFixed(0)}%;background:${v>0.7?'var(--success)':v>0.5?'var(--primary)':'var(--muted)'}"></div></div></div>
+        <div class="rl-score">${(v*100).toFixed(0)}%</div>
+      </div>`).join('');
+  }
+  // 관리자
+  const s1=document.getElementById('rl-total-sessions');
+  const s2=document.getElementById('rl-total-reward');
+  const s4=document.getElementById('rl-accuracy');
+  if (s1) s1.textContent = RL_EPISODES;
+  if (s2) s2.textContent = TOTAL_REWARD.toFixed(0);
+  if (s4 && RL_EPISODES > 0) s4.textContent = (Math.min(99, 50 + RL_EPISODES * 2)).toFixed(0) + '%';
+  renderRLQTable();
+  renderRLHistory();
+}
+
+function renderRLQTable() {
+  const el = document.getElementById('rlQTable');
+  if (!el) return;
+  const sorted = CATEGORIES.map(c => ({c, v: Q_TABLE[c]||0.5})).sort((a,b)=>b.v-a.v);
+  el.innerHTML = `<table class="data-table" style="min-width:400px">
+    <thead><tr><th>카테고리</th><th>Q값</th><th>선호도 바</th><th>상태</th></tr></thead>
+    <tbody>${sorted.map(({c,v}) => `<tr>
+      <td style="font-weight:600">${c}</td>
+      <td style="font-family:'DM Mono',monospace">${v.toFixed(3)}</td>
+      <td><div class="rl-bar-wrap" style="width:120px"><div class="rl-bar" style="width:${(v*100).toFixed(0)}%;background:${v>0.7?'var(--success)':v>0.5?'var(--primary)':'var(--muted)'}"></div></div></td>
+      <td><span class="status-dot ${v>0.7?'status-upcoming':v>0.5?'status-ongoing':'status-done'}">${v>0.7?'선호':'중립'}</span></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function renderRLHistory() {
+  const el = document.getElementById('rlHistory');
+  if (!el || !RL_HISTORY.length) { if(el) el.innerHTML='<div style="font-size:.78rem;color:var(--muted);padding:10px">아직 학습 이력이 없습니다.</div>'; return; }
+  el.innerHTML = `<table class="data-table"><thead><tr><th>회차</th><th>학습 카테고리</th><th>보상</th><th>시각</th></tr></thead>
+    <tbody>${RL_HISTORY.map(h=>`<tr>
+      <td style="font-family:'DM Mono',monospace">#${h.ep}</td>
+      <td><span class="badge badge-sport">${h.cats}</span></td>
+      <td style="color:var(--success);font-weight:700">+${h.reward}</td>
+      <td style="font-size:.72rem;color:var(--muted)">${h.time}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+function resetRL() {
+  if (!confirm('학습 데이터를 초기화하시겠습니까?')) return;
+  Q_TABLE = USER_PROFILE.age ? applyProfilePriors(USER_PROFILE) : initQTable();
+  RL_HISTORY = []; RL_EPISODES = 0; TOTAL_REWARD = 0;
+  saveQTable(Q_TABLE);
+  sessionStorage.removeItem('sptrip_rl_history');
+  sessionStorage.setItem('sptrip_episodes','0');
+  sessionStorage.setItem('sptrip_reward','0');
+  updateRLUI();
+  showToast('🔄 강화학습 데이터가 초기화되었습니다.', 'default');
+}
+
+// ── 프로필 모달 ──
+function openProfileModal() {
+  document.getElementById('profileOverlay').classList.add('show');
+  // 기존 선택 복원
+  if (USER_PROFILE.age) {
+    document.querySelectorAll('#chipAge .profile-chip').forEach(c => {
+      if (c.textContent === USER_PROFILE.age) c.classList.add('selected');
+    });
+  }
+  if (USER_PROFILE.gender) {
+    document.querySelectorAll('#chipGender .profile-chip').forEach(c => {
+      if (c.textContent === USER_PROFILE.gender) c.classList.add('selected');
+    });
+  }
+  if (USER_PROFILE.family) {
+    document.querySelectorAll('#chipFamily .profile-chip').forEach(c => {
+      if (c.textContent.trim().includes(USER_PROFILE.family.replace(/[🧍💑👶🧒👫🧓]/g,'').trim())) c.classList.add('selected');
+    });
+  }
+  (USER_PROFILE.styles||[]).forEach(s => {
+    document.querySelectorAll('#chipStyle .profile-chip').forEach(c => {
+      if (c.textContent.includes(s)) c.classList.add('selected-orange');
+    });
+  });
+}
+
+function closeProfileModal() {
+  document.getElementById('profileOverlay').classList.remove('show');
+}
+
+function selectChip(field, value, el) {
+  const groupMap = { age:'#chipAge', gender:'#chipGender', family:'#chipFamily' };
+  document.querySelectorAll(groupMap[field]+' .profile-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  USER_PROFILE[field] = value;
+}
+
+function toggleStyle(value, el) {
+  if (!USER_PROFILE.styles) USER_PROFILE.styles = [];
+  if (el.classList.contains('selected-orange')) {
+    el.classList.remove('selected-orange');
+    USER_PROFILE.styles = USER_PROFILE.styles.filter(s => s !== value);
+  } else {
+    el.classList.add('selected-orange');
+    USER_PROFILE.styles.push(value);
+  }
+}
+
+function saveProfile() {
+  if (!USER_PROFILE.age) { showToast('나이대를 선택해주세요.', 'error'); return; }
+  if (!USER_PROFILE.gender) { showToast('성별을 선택해주세요.', 'error'); return; }
+  if (!USER_PROFILE.family) { showToast('동반 유형을 선택해주세요.', 'error'); return; }
+
+  // 프로필 기반 Q값 초기화
+  Q_TABLE = applyProfilePriors(USER_PROFILE);
+  saveQTable(Q_TABLE);
+
+  // sessionStorage에 프로필 저장
+  sessionStorage.setItem('sptrip_profile', JSON.stringify(USER_PROFILE));
+
+  closeProfileModal();
+  updateProfileSummary();
+  updateRLUI();
+
+  // 캐시 초기화 (새 프로필로 재추천)
+  Object.keys(tourCache).forEach(k => delete tourCache[k]);
+
+  showToast(`🎯 프로필 설정 완료! ${USER_PROFILE.age} ${USER_PROFILE.family} 맞춤 코스를 추천합니다.`, 'success');
+
+  // 관리자 프로필 수 업데이트
+  const p = document.getElementById('rl-active-profiles');
+  if (p) p.textContent = parseInt(p.textContent||'0') + 1;
+}
+
+function updateProfileSummary() {
+  const card = document.getElementById('profileSummaryCard');
+  const noCard = document.getElementById('noProfileCard');
+  const rlCard = document.getElementById('rlStatusCard');
+  const avatarEl = document.getElementById('profileAvatarIcon');
+  const summaryEl = document.getElementById('profileSummaryText');
+  const styleEl = document.getElementById('profileStyleText');
+  if (!card || !USER_PROFILE.age) return;
+  card.style.display = 'block';
+  if (noCard) noCard.style.display = 'none';
+  if (rlCard) rlCard.style.display = 'block';
+  const avatarMap = { '혼자':'🧍','커플':'💑','가족(유아)':'👶','가족(초등)':'🧒','친구그룹':'👫','시니어':'🧓' };
+  if (avatarEl) avatarEl.textContent = avatarMap[USER_PROFILE.family] || '🎯';
+  if (summaryEl) summaryEl.textContent = `${USER_PROFILE.age} · ${USER_PROFILE.gender} · ${USER_PROFILE.family}`;
+  if (styleEl) styleEl.textContent = USER_PROFILE.styles?.length ? '여행 성향: ' + USER_PROFILE.styles.join(', ') : '여행 성향 미설정';
+}
+
+// ── 행동 추적 (클릭·체류·즐겨찾기·공유) ──
+function trackSpotClick(spot) {
+  const cats = spotToCategories(spot);
+  qlUpdate(cats, REWARD.click);
+}
+
+function trackFavorite(isAdding) {
+  if (!curEv) return;
+  // 현재 대회 코스의 카테고리들
+  const course = COURSES[curEv.id]?.[curTab] || [];
+  const cats = course.flatMap(s => spotToCategories(s)).filter((v,i,a)=>a.indexOf(v)===i);
+  if (cats.length) qlUpdate(cats, isAdding ? REWARD.favorite : -1);
+}
+
+function trackShare() {
+  if (!curEv) return;
+  const course = COURSES[curEv.id]?.[curTab] || [];
+  const cats = course.flatMap(s => spotToCategories(s)).filter((v,i,a)=>a.indexOf(v)===i);
+  if (cats.length) qlUpdate(cats, REWARD.share);
+}
+
+function startDwellTracking() {
+  DWELL_START = Date.now();
+}
+function stopDwellTracking() {
+  if (!DWELL_START || !curEv) return;
+  const sec = (Date.now() - DWELL_START) / 1000;
+  if (sec > 5) {
+    const course = COURSES[curEv.id]?.[curTab] || [];
+    const cats = course.flatMap(s => spotToCategories(s)).filter((v,i,a)=>a.indexOf(v)===i);
+    if (cats.length) qlUpdate(cats, Math.min(sec * REWARD.dwell, 3));
+  }
+  DWELL_START = null;
+}
+
+// ── GNB에 프로필 버튼 추가 ──
+const _origUpdateGNB = updateGNB;
+updateGNB = function() {
+  _origUpdateGNB();
+  // 마이페이지 링크 옆에 프로필 버튼 추가 (랜딩 제외)
+  const isLand = document.getElementById('page-landing').classList.contains('active');
+  if (!isLand && AUTH.isLoggedIn) {
+    const nav = document.getElementById('gnbNav');
+    if (nav && !nav.querySelector('.profile-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'gnb-link profile-btn';
+      btn.textContent = USER_PROFILE.age ? '🎯 내 취향' : '🎯 취향설정';
+      btn.onclick = openProfileModal;
+      nav.appendChild(btn);
+    }
+  }
+};
+
+// ── renderCourseWithTourData 개인화 래핑 ──
+const _origRenderCourse = renderCourseWithTourData;
+renderCourseWithTourData = async function(tab) {
+  startDwellTracking();
+  await _origRenderCourse(tab);
+  // 코스 카드에 개인화 점수 배지 추가
+  if (USER_PROFILE.age) {
+    document.querySelectorAll('.spot-card').forEach(card => {
+      const nameEl = card.querySelector('.spot-name');
+      if (!nameEl) return;
+      const spotName = nameEl.textContent;
+      const matchCourse = (COURSES[curEv?.id]?.[tab] || []).find(s => s.name === spotName);
+      if (!matchCourse) return;
+      const cats = spotToCategories(matchCourse);
+      const score = cats.reduce((s, c) => s + (Q_TABLE[c]||0.5), 0) / cats.length;
+      if (score > 0.65 && !card.querySelector('.rl-score-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'personalized-badge rl-score-badge';
+        badge.style.marginLeft = '6px';
+        badge.textContent = score > 0.8 ? '🎯 강추' : '👍 추천';
+        nameEl.appendChild(badge);
+      }
+      // 클릭 추적
+      card.addEventListener('click', () => trackSpotClick(matchCourse), {once: true});
+    });
+  }
+};
+
+// ── 즐겨찾기·공유에 RL 연동 ──
+const _origToggleFav = toggleFav;
+toggleFav = function() {
+  const wasFav = favSet.has(curEv?.id);
+  _origToggleFav();
+  trackFavorite(!wasFav);
+};
+
+const _origCopyLink = copyLink;
+copyLink = function() {
+  _origCopyLink();
+  trackShare();
+};
+
+// ── 페이지 이탈 시 체류시간 추적 ──
+const _origShowPage = showPage;
+showPage = function(n) {
+  stopDwellTracking();
+  _origShowPage(n);
+  if (n === 'my') {
+    updateProfileSummary();
+    updateRLUI();
+  }
+};
+
+// ── 초기 복원 ──
+(function initProfile() {
+  const saved = sessionStorage.getItem('sptrip_profile');
+  if (saved) {
+    try {
+      USER_PROFILE = JSON.parse(saved);
+      Q_TABLE = loadQTable();
+    } catch(e) {}
+  }
+  updateRLUI();
+})();
 
 // ═══ TOAST ═══
 function showToast(msg,type='default'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className='toast'+(type!=='default'?' '+type:'');t.innerHTML=msg;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
