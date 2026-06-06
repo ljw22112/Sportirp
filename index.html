@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>스포트립 SpoTrip — 경기가 끝나도 여행은 계속된다</title>
 <meta name="description" content="스포츠 대회 일정에 맞춰 주변 관광 코스를 AI가 자동으로 만들어드립니다.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B4F72">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="스포트립">
+<meta property="og:title" content="스포트립 — 경기가 끝나도 여행은 계속된다">
+<meta property="og:description" content="스포츠 대회 일정에 맞춰 주변 관광 코스를 AI가 자동으로 만들어드립니다.">
+<meta property="og:url" content="https://ljw22112.github.io/Sportirp/">
+<meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -475,6 +484,70 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 .rl-panel h3{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:6px}
 .episodes-counter{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:500;color:var(--primary)}
 
+
+/* ── 날씨 위젯 ── */
+.weather-widget{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:6px 12px;font-size:.78rem;color:rgba(255,255,255,.8);cursor:default}
+.gnb.light .weather-widget{background:var(--light);border-color:var(--border);color:var(--text)}
+.weather-icon{font-size:1.1rem}
+.weather-temp{font-weight:700;font-family:'DM Mono',monospace}
+
+/* ── 카운트다운 배너 ── */
+.countdown-banner{background:linear-gradient(90deg,var(--orange),#FF7043);color:var(--white);padding:7px 14px;display:flex;align-items:center;justify-content:space-between;font-size:.78rem;font-weight:600}
+.countdown-timer{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:.04em}
+
+/* ── 교통편 카드 ── */
+.transport-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.transport-icon{font-size:1.2rem;flex-shrink:0;width:28px;text-align:center}
+.transport-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.transport-desc{font-size:.73rem;color:var(--muted);line-height:1.5}
+.transport-time{font-size:.7rem;font-weight:600;color:var(--primary);margin-top:3px}
+
+/* ── 공유 버튼 ── */
+.share-menu{position:absolute;top:110%;right:0;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px;z-index:100;min-width:160px;display:none}
+.share-menu.open{display:block}
+.share-menu-item{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:7px;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:background .15s}
+.share-menu-item:hover{background:var(--light)}
+.share-wrap{position:relative}
+
+/* ── 코스 인쇄 ── */
+@media print{
+  .gnb,.search-hero,.map-panel,.detail-actions,.cards-panel,
+  .festival-section,.nearby-list,.detail-right,#page-landing,
+  #page-register,#page-my,#page-data,#page-admin,
+  .btn-fav,.btn-share,.share-wrap,.nearby-tab{display:none!important}
+  .page{display:block!important}
+  .detail-body{grid-template-columns:1fr!important}
+  .print-header{display:block!important}
+  body{background:white!important}
+  .spot-card{break-inside:avoid;border:1px solid #ddd!important}
+}
+.print-header{display:none;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--primary)}
+.print-header h2{font-size:1.1rem;font-weight:800;color:var(--primary)}
+.print-header p{font-size:.8rem;color:var(--muted)}
+
+/* ── 날씨 상세 ── */
+.weather-detail{background:linear-gradient(135deg,#0EA5E9 0%,#0284C7 100%);border-radius:var(--radius-lg);padding:16px;color:var(--white);margin-bottom:14px}
+.weather-main{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.weather-big-icon{font-size:2.5rem}
+.weather-big-temp{font-size:2rem;font-weight:900;font-family:'DM Mono',monospace}
+.weather-sub-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.weather-sub-item{background:rgba(255,255,255,.15);border-radius:8px;padding:7px;text-align:center}
+.weather-sub-label{font-size:.62rem;opacity:.75;margin-bottom:2px}
+.weather-sub-val{font-size:.82rem;font-weight:700}
+
+/* ── 인스톨 배너 ── */
+.install-banner{position:fixed;bottom:0;left:0;right:0;background:var(--primary);color:var(--white);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;z-index:300;transform:translateY(100%);transition:transform .3s ease}
+.install-banner.show{transform:translateY(0)}
+.install-btn{padding:6px 16px;background:var(--orange);color:var(--white);border:none;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer}
+
+/* ── 검색 자동완성 ── */
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1.5px solid var(--border);border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow-lg);z-index:50;max-height:200px;overflow-y:auto;display:none}
+.autocomplete-list.show{display:block}
+.autocomplete-item{padding:8px 12px;font-size:.82rem;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+.autocomplete-item:hover{background:#EBF4FF;color:var(--primary)}
+.autocomplete-item:last-child{border-bottom:none}
+.search-wrap{position:relative}
+
 </style>
 </head>
 <body>
@@ -487,6 +560,11 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
     <button class="gnb-link" onclick="requireLogin('register')">✚ 간편등록</button>
     <button class="gnb-link" onclick="requireLogin('my')">마이페이지</button>
     <button class="gnb-link" onclick="showPage('data')">🔌 데이터</button>
+  </div>
+  <div id="weatherWidget" class="weather-widget" style="display:none">
+    <span class="weather-icon" id="wIcon">🌤️</span>
+    <span class="weather-temp" id="wTemp">--°</span>
+    <span style="font-size:.7rem;opacity:.7" id="wDesc">날씨</span>
   </div>
   <div class="gnb-right" id="gnbRight">
     <button class="btn-sm btn-ghost" onclick="openLogin('login')">로그인</button>
@@ -674,8 +752,13 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
     <h1>🏟️ 전국 스포츠 대회, 한눈에</h1>
     <p>대회 일정에 맞춰 주변 관광 코스를 AI가 자동으로 만들어드립니다</p>
     <div class="search-box">
+      <div style="position:relative;margin-bottom:10px">
+        <input type="text" class="form-control" id="searchKeyword" placeholder="🔍 대회명으로 검색..." oninput="handleSearchInput(this.value)" autocomplete="off" style="padding-left:36px;font-size:.88rem">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none">🔍</span>
+        <div class="autocomplete-list" id="autocompleteList"></div>
+      </div>
       <div class="search-row">
-        <div class="form-group"><label class="form-label">지역</label>
+        <div class="form-group search-wrap"><label class="form-label">지역</label>
           <select class="form-control" id="filterRegion"><option>전체 지역</option><option>서울</option><option>부산</option><option>대구</option><option>인천</option><option>광주</option><option>대전</option><option>울산</option><option>경기</option><option>강원</option><option>경북</option><option>세종</option><option>제주</option></select></div>
         <div class="form-group"><label class="form-label">날짜</label><input type="date" class="form-control" id="filterDate"></div>
         <div class="form-group"><label class="form-label">종목</label>
@@ -731,6 +814,10 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 
 <div id="page-detail" class="page app-page">
   <div class="detail-back" onclick="showPage('main')">← 검색 결과로 돌아가기</div>
+<div id="countdownBanner" class="countdown-banner" style="display:none">
+  <span id="countdownLabel">⏰ 대회까지</span>
+  <span class="countdown-timer" id="countdownTimer">--일 --:--:--</span>
+</div>
   <div class="detail-header" id="detailHeader"></div>
   <div class="detail-body">
     <div class="detail-left" id="detailLeft"></div>
@@ -1171,6 +1258,31 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
   </div>
 </div>
 
+
+<!-- ═══ 교통편 모달 ═══ -->
+<div class="overlay" id="transportOverlay">
+  <div class="modal-box" style="width:460px;max-height:85vh;overflow-y:auto">
+    <button class="modal-close" onclick="document.getElementById('transportOverlay').classList.remove('show')">✕</button>
+    <div class="modal-title" id="transportTitle">🚇 교통편 안내</div>
+    <div class="modal-sub" id="transportSubtitle">경기장까지 가는 방법</div>
+    <div id="transportContent"></div>
+    <div style="background:#EBF4FF;border-radius:9px;padding:10px 13px;margin-top:10px;font-size:.74rem;color:var(--primary)">
+      💡 <strong>팁:</strong> 대회 당일은 혼잡합니다. 대중교통 이용을 강력 권장합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 앱 설치 배너 ═══ -->
+<div class="install-banner" id="installBanner">
+  <div>
+    <div style="font-size:.85rem;font-weight:700">📱 스포트립 앱 설치</div>
+    <div style="font-size:.72rem;opacity:.8">홈화면에 추가하면 더 빠르게!</div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="install-btn" id="installBtn">설치하기</button>
+    <button onclick="document.getElementById('installBanner').classList.remove('show')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:1.2rem;cursor:pointer">✕</button>
+  </div>
+</div>
 <div class="overlay" id="confirmOverlay">
   <div class="confirm-modal">
     <div style="font-size:1.7rem;margin-bottom:6px">⚠️</div>
@@ -1448,10 +1560,20 @@ function openDetail(id){
       ${d>0?`<span class="badge badge-upcoming" style="padding:3px 10px;font-size:.73rem">D-${d}</span>`:''}
     </div>
     <div class="detail-actions">
-      <button class="btn-fav ${favSet.has(ev.id)?'active':''}" id="favBtn" onclick="toggleFav()">${favSet.has(ev.id)?'❤️':'🤍'} 즐겨찾기</button>
-      <button class="btn-share" onclick="copyLink()">🔗 공유</button>
-      ${ev.url?`<a href="${ev.url}" target="_blank" class="btn-share" style="text-decoration:none">🌐 공식 사이트</a>`:''}
-    </div>`;
+      <button class="btn-fav \${favSet.has(ev.id)?'active':''}" id="favBtn" onclick="toggleFav()">\${favSet.has(ev.id)?'❤️':'🤍'} 즐겨찾기</button>
+      <div class="share-wrap">
+        <button class="btn-share" onclick="toggleShareMenu(this)">🔗 공유 ▾</button>
+        <div class="share-menu" id="shareMenu">
+          <div class="share-menu-item" onclick="shareKakao()">🟡 카카오톡 공유</div>
+          <div class="share-menu-item" onclick="shareTwitter()">🐦 X(트위터)</div>
+          <div class="share-menu-item" onclick="copyLink()">🔗 링크 복사</div>
+          <div class="share-menu-item" onclick="printCourse()">🖨️ 코스 인쇄</div>
+        </div>
+      </div>
+      \${ev.url?`<a href="\${ev.url}" target="_blank" class="btn-share" style="text-decoration:none">🌐 공식 사이트</a>`:''}
+      <button class="btn-share" onclick="showTransport(\${ev.id})" style="color:var(--success);border-color:var(--success)">🚇 교통편</button>
+    </div>
+    <div id="weatherBanner" style="display:none;margin-top:10px"></div>`;
   renderCourseWithTourData('day_before');renderStaysWithTourData();renderDMap();showPage('detail');
 }
 function renderCourse(){
@@ -1941,6 +2063,10 @@ async function renderCourseWithTourData(tab) {
       ${['day_before','day_of','day_after'].map(t =>
         `<button class="course-tab ${tab===t?'active':''}" onclick="switchTabTour('${t}')">${tl[t]}</button>`
       ).join('')}
+    </div>
+    <div class="print-header" id="printHeader">
+      <h2>🗺️ 스포트립 관광 코스</h2>
+      <p id="printEventInfo"></p>
     </div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
       <div style="font-size:.72rem;color:var(--muted)">
@@ -2492,6 +2618,290 @@ showPage = function(n) {
   }
   updateRLUI();
 })();
+
+
+// ═══════════════════════════════════════
+// 신규 기능 모음
+// ═══════════════════════════════════════
+
+// ── 날씨 (기상청 공개 API) ──────────────────
+const WEATHER_ICON = {
+  '맑음':'☀️','구름조금':'🌤️','구름많음':'⛅','흐림':'☁️',
+  '비':'🌧️','눈':'❄️','소나기':'⛈️','안개':'🌫️'
+};
+async function fetchWeather(lat, lng) {
+  if (!lat || !lng) return null;
+  try {
+    // 기상청 초단기실황 (격자 변환은 근사값 사용)
+    const nx = Math.round((lng - 126) * 30 / 1.5 + 60);
+    const ny = Math.round((lat - 35)  * 30 / 1.5 + 60);
+    const now = new Date();
+    const base_date = now.toISOString().slice(0,10).replace(/-/g,'');
+    const hh = String(now.getHours()).padStart(2,'0');
+    const base_time = hh + '00';
+    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&dataType=JSON`;
+    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    const data = await res.json();
+    const items = data?.response?.body?.items?.item || [];
+    const t1h = items.find(i => i.category === 'T1H')?.obsrValue;
+    const rn1 = items.find(i => i.category === 'RN1')?.obsrValue;
+    const sky = parseFloat(rn1) > 0 ? '비' : '맑음';
+    return { temp: t1h ? Math.round(parseFloat(t1h)) : null, sky };
+  } catch(e) {
+    return null;
+  }
+}
+
+async function updateWeatherWidget(lat, lng, locationName) {
+  const widget = document.getElementById('weatherWidget');
+  if (!widget) return;
+  const data = await fetchWeather(lat, lng);
+  if (!data || !data.temp) { widget.style.display='none'; return; }
+  widget.style.display = 'flex';
+  document.getElementById('wIcon').textContent = WEATHER_ICON[data.sky] || '🌤️';
+  document.getElementById('wTemp').textContent = data.temp + '°C';
+  document.getElementById('wDesc').textContent = locationName || data.sky;
+}
+
+async function showEventWeather(ev) {
+  if (!ev?.lat || ev.lat === 0) return;
+  const data = await fetchWeather(ev.lat, ev.lng);
+  const banner = document.getElementById('weatherBanner');
+  if (!banner) return;
+  if (!data || !data.temp) { banner.style.display='none'; return; }
+  const icon = WEATHER_ICON[data.sky] || '🌤️';
+  banner.style.display = 'block';
+  banner.innerHTML = `
+    <div class="weather-detail">
+      <div class="weather-main">
+        <div class="weather-big-icon">${icon}</div>
+        <div>
+          <div class="weather-big-temp">${data.temp}°C</div>
+          <div style="font-size:.78rem;opacity:.8">${ev.region} 현재 날씨 · ${data.sky}</div>
+        </div>
+      </div>
+      <div class="weather-sub-info">
+        <div class="weather-sub-item"><div class="weather-sub-label">강수</div><div class="weather-sub-val">${data.sky === '비' ? '🌧️ 비' : '없음'}</div></div>
+        <div class="weather-sub-item"><div class="weather-sub-label">상태</div><div class="weather-sub-val">${data.sky}</div></div>
+        <div class="weather-sub-item"><div class="weather-sub-label">체감</div><div class="weather-sub-val">${data.temp - 2}°C</div></div>
+      </div>
+    </div>`;
+}
+
+// ── 카운트다운 타이머 ──────────────────────
+let _countdownTimer = null;
+function startCountdown(ev) {
+  const banner = document.getElementById('countdownBanner');
+  const label  = document.getElementById('countdownLabel');
+  const timer  = document.getElementById('countdownTimer');
+  if (!banner || !ev) return;
+  if (ev.status === 'done') { banner.style.display='none'; return; }
+  banner.style.display = 'flex';
+  label.textContent = ev.status === 'ongoing' ? '🏃 대회 진행 중' : `⏰ "${ev.title.slice(0,12)}…" 까지`;
+  clearInterval(_countdownTimer);
+  function tick() {
+    const target = new Date(ev.start + 'T00:00:00');
+    const diff = target - new Date();
+    if (diff <= 0) {
+      timer.textContent = ev.status === 'ongoing' ? '진행 중! 🎉' : '오늘! 🎉';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000)  / 60000);
+    const s = Math.floor((diff % 60000)    / 1000);
+    timer.textContent = `${d}일 ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  tick();
+  _countdownTimer = setInterval(tick, 1000);
+}
+
+// ── 교통편 안내 ────────────────────────────
+const TRANSPORT_DATA = {
+  '서울': [
+    {icon:'🚇', title:'지하철', desc:'광화문역 5번 출구 도보 3분 (5호선)', time:'약 이동 후 5분'},
+    {icon:'🚌', title:'버스', desc:'광화문 정류장 하차 (간선버스 다수)', time:'지역별 상이'},
+    {icon:'🚗', title:'자가용', desc:'광화문광장 인근 주차 불가 — 대중교통 강력 권장', time:''},
+  ],
+  '부산': [
+    {icon:'🚇', title:'지하철', desc:'아시아드경기장역 1번 출구 도보 5분 (2호선)', time:'부산역에서 약 20분'},
+    {icon:'🚌', title:'버스', desc:'아시아드주경기장 정류장 하차', time:''},
+    {icon:'🚂', title:'KTX', desc:'부산역 도착 후 지하철 이용', time:'서울역에서 약 2시간 30분'},
+  ],
+  '경북': [
+    {icon:'🚗', title:'자가용', desc:'경부고속도로 경주IC 하차 후 20분', time:'서울에서 약 3시간'},
+    {icon:'🚂', title:'KTX', desc:'신경주역 도착 후 택시/버스 이용', time:'동대구역에서 약 20분'},
+    {icon:'🚌', title:'버스', desc:'경주 고속버스터미널 → 보문단지행 좌석버스', time:'터미널에서 약 15분'},
+  ],
+  '강원': [
+    {icon:'🚗', title:'자가용', desc:'서울춘천고속도로 → 춘천IC', time:'서울에서 약 1시간 30분'},
+    {icon:'🚂', title:'ITX-청춘', desc:'용산역 → 춘천역 (경춘선)', time:'약 1시간 20분'},
+    {icon:'🚌', title:'버스', desc:'동서울터미널 → 춘천터미널', time:'약 1시간 40분'},
+  ],
+  '충북': [
+    {icon:'🚗', title:'자가용', desc:'중부내륙고속도로 충주IC 하차', time:'서울에서 약 1시간 30분'},
+    {icon:'🚂', title:'충북선', desc:'청주역 → 충주역 (무궁화호)', time:'약 1시간'},
+    {icon:'🚌', title:'버스', desc:'동서울터미널 → 충주터미널', time:'약 1시간 40분'},
+  ],
+  '제주': [
+    {icon:'✈️', title:'항공', desc:'김포·김해·인천공항 → 제주국제공항', time:'약 1시간 내외'},
+    {icon:'🛳️', title:'여객선', desc:'목포·완도·여수항 → 제주항', time:'약 4~12시간'},
+    {icon:'🚌', title:'공항버스', desc:'제주공항에서 시내버스 이용', time:'목적지별 상이'},
+  ],
+  '세종': [
+    {icon:'🚗', title:'자가용', desc:'천안논산고속도로 정안IC 하차', time:'서울에서 약 1시간 40분'},
+    {icon:'🚌', title:'버스', desc:'세종고속버스터미널 이용', time:'강남터미널에서 약 1시간 30분'},
+    {icon:'🚇', title:'BRT', desc:'세종 BRT 이용 — 한솔동 정류장 하차', time:''},
+  ],
+};
+
+function showTransport(eventId) {
+  const ev = EVENTS.find(e => e.id === eventId);
+  if (!ev) return;
+  const overlay = document.getElementById('transportOverlay');
+  document.getElementById('transportTitle').textContent = '🚇 교통편 안내';
+  document.getElementById('transportSubtitle').textContent = ev.venue;
+  const region = ev.region;
+  const data = TRANSPORT_DATA[region] || [
+    {icon:'🚗', title:'자가용', desc:'내비게이션으로 경기장 검색', time:''},
+    {icon:'🚌', title:'버스', desc:'지역 시내버스 이용', time:''},
+    {icon:'🔍', title:'실시간 검색', desc:'네이버/카카오맵에서 최신 교통편 확인', time:''},
+  ];
+  document.getElementById('transportContent').innerHTML = data.map(t => `
+    <div class="transport-card">
+      <div class="transport-icon">${t.icon}</div>
+      <div>
+        <div class="transport-title">${t.title}</div>
+        <div class="transport-desc">${t.desc}</div>
+        ${t.time ? `<div class="transport-time">⏱ ${t.time}</div>` : ''}
+      </div>
+    </div>`).join('') + `
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <a href="https://map.kakao.com/link/search/${encodeURIComponent(ev.venue)}" target="_blank"
+         style="flex:1;padding:8px;background:#FEE500;color:#3C1E1E;border:none;border-radius:8px;font-size:.8rem;font-weight:700;text-align:center;text-decoration:none;display:block">
+        🗺️ 카카오맵에서 길찾기
+      </a>
+      <a href="https://map.naver.com/v5/search/${encodeURIComponent(ev.venue)}" target="_blank"
+         style="flex:1;padding:8px;background:#03C75A;color:white;border:none;border-radius:8px;font-size:.8rem;font-weight:700;text-align:center;text-decoration:none;display:block">
+        🟢 네이버지도에서 길찾기
+      </a>
+    </div>`;
+  overlay.classList.add('show');
+}
+
+// ── 공유 기능 ──────────────────────────────
+function toggleShareMenu(btn) {
+  const menu = document.getElementById('shareMenu');
+  if (!menu) return;
+  menu.classList.toggle('open');
+  // 외부 클릭 시 닫기
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.classList.remove('open');
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 10);
+}
+
+function shareKakao() {
+  if (!curEv) return;
+  document.getElementById('shareMenu')?.classList.remove('open');
+  const url = `https://ljw22112.github.io/Sportirp/`;
+  const text = `[스포트립] ${curEv.title}\n📍 ${curEv.venue}\n📅 ${curEv.start} ~ ${curEv.end}\n\n전날·당일·이후 관광 코스 확인 👉`;
+  // 카카오SDK 미연동 시 클립보드 복사 후 안내
+  navigator.clipboard?.writeText(text + '\n' + url).catch(()=>{});
+  showToast('📋 카카오톡용 텍스트가 복사됐습니다. 카톡 채팅창에 붙여넣기 하세요!', 'success');
+}
+
+function shareTwitter() {
+  if (!curEv) return;
+  document.getElementById('shareMenu')?.classList.remove('open');
+  const text = encodeURIComponent(`[스포트립] ${curEv.title} 관광 코스 확인하기 🏃`);
+  const url  = encodeURIComponent('https://ljw22112.github.io/Sportirp/');
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+// ── 코스 인쇄 ──────────────────────────────
+function printCourse() {
+  document.getElementById('shareMenu')?.classList.remove('open');
+  if (!curEv) return;
+  const ph = document.getElementById('printHeader');
+  const pi = document.getElementById('printEventInfo');
+  if (ph) ph.style.display = 'block';
+  if (pi) pi.textContent = `${curEv.title} | ${curEv.start} ~ ${curEv.end} | ${curEv.venue}`;
+  window.print();
+  setTimeout(() => { if (ph) ph.style.display = 'none'; }, 500);
+}
+
+// ── 검색 자동완성 ──────────────────────────
+function handleSearchInput(val) {
+  const list = document.getElementById('autocompleteList');
+  if (!list) return;
+  if (!val || val.length < 1) { list.classList.remove('show'); return; }
+  const matches = EVENTS.filter(e =>
+    e.title.includes(val) || e.region.includes(val) ||
+    e.sport.includes(val) || e.venue.includes(val)
+  ).slice(0, 6);
+  if (!matches.length) { list.classList.remove('show'); return; }
+  list.innerHTML = matches.map(e => `
+    <div class="autocomplete-item" onclick="selectAutocomplete(${e.id})">
+      <span style="margin-right:6px">${e.icon}</span>
+      <span style="font-weight:600">${e.title}</span>
+      <span style="color:var(--muted);font-size:.72rem;margin-left:6px">${e.region} · ${e.start}</span>
+    </div>`).join('');
+  list.classList.add('show');
+}
+
+function selectAutocomplete(id) {
+  document.getElementById('autocompleteList')?.classList.remove('show');
+  openDetail(id);
+}
+
+// 자동완성 외부 클릭 닫기
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    document.getElementById('autocompleteList')?.classList.remove('show');
+  }
+});
+
+// ── PWA 설치 배너 ──────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    document.getElementById('installBanner')?.classList.add('show');
+  }, 5000);
+});
+document.getElementById('installBtn')?.addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner')?.classList.remove('show');
+  if (outcome === 'accepted') showToast('📱 앱이 설치되었습니다!', 'success');
+});
+
+// ── openDetail 래핑 (날씨 + 카운트다운 연동) ──
+const _origOpenDetail = openDetail;
+openDetail = function(id) {
+  _origOpenDetail(id);
+  const ev = EVENTS.find(e => e.id === id);
+  if (!ev) return;
+  // 카운트다운
+  startCountdown(ev);
+  // 날씨
+  showEventWeather(ev);
+  // GNB 날씨 업데이트
+  if (ev.lat && ev.lat !== 0) updateWeatherWidget(ev.lat, ev.lng, ev.region);
+};
+
+// ── 초기 실행 시 GNB 날씨 (서울 기본) ──
+window.addEventListener('load', () => {
+  updateWeatherWidget(37.5665, 126.9780, '서울');
+});
 
 // ═══ TOAST ═══
 function showToast(msg,type='default'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className='toast'+(type!=='default'?' '+type:'');t.innerHTML=msg;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
