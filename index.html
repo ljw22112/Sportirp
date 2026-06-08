@@ -2019,7 +2019,7 @@ async function renderCourseWithTourData(tab) {
     <div class="spot-card">
       <div class="spot-order">${i+1}</div>
       ${s.img
-        ? `<img class="spot-img" src="${s.img}" onerror="this.outerHTML='<div class=\"spot-img\">${s.icon}</div>'" style="object-fit:cover">`
+        ? `<img class="spot-img" src="${s.img}" onerror="imgFallback(this,'📍','img-fallback')"spot-img\">${s.icon}</div>'" style="object-fit:cover">`
         : `<div class="spot-img">${s.icon}</div>`}
       <div class="spot-info">
         <span class="spot-type-badge type-${s.type}">${typeLabel[s.type]||s.type}</span>
@@ -2099,7 +2099,7 @@ async function renderStaysWithTourData() {
     </div>
     ${stays.map(s => `
       <div class="stay-card">
-        ${s.img ? `<img class="stay-thumb" src="${s.img}" onerror="this.outerHTML='<div class=\"stay-thumb\">🏨</div>'" style="object-fit:cover">` : `<div class="stay-thumb">🏨</div>`}
+        ${s.img ? `<img class="stay-thumb" src="${s.img}" onerror="imgFallback(this,'📍','img-fallback')"stay-thumb\">🏨</div>'" style="object-fit:cover">` : `<div class="stay-thumb">🏨</div>`}
         <div>
           <div class="stay-name">${s.title||s.name||''}</div>
           <div class="stay-type">${s.cat||s.type||''} ${s.grade?'· '+s.grade:''}</div>
@@ -2902,6 +2902,17 @@ openDetail = function(id) {
 window.addEventListener('load', () => {
   updateWeatherWidget(37.5665, 126.9780, '서울');
 });
+
+
+function imgFallback(el, emoji, cls) {
+  try {
+    const d = document.createElement('div');
+    d.className = cls || el.className;
+    d.textContent = emoji || '📍';
+    d.style.cssText = 'display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:var(--light);border-radius:7px;flex-shrink:0;width:'+el.width+'px;height:'+el.height+'px';
+    el.parentNode.replaceChild(d, el);
+  } catch(e) { el.style.display='none'; }
+}
 
 // ═══ TOAST ═══
 function showToast(msg,type='default'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className='toast'+(type!=='default'?' '+type:'');t.innerHTML=msg;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
