@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>스포트립 SpoTrip — 경기가 끝나도 여행은 계속된다</title>
 <meta name="description" content="스포츠 대회 일정에 맞춰 주변 관광 코스를 AI가 자동으로 만들어드립니다.">
+
+<!-- ══ 스포트립 API 키 설정 ══
+     배포 전 아래 키를 발급받은 값으로 교체하세요.
+     (공개 저장소에 실제 키를 커밋하지 마세요) -->
+<script>
+  // 1) data.go.kr → 마이페이지 → 인증키 발급현황 에서 복사
+  window.SPORTRIP_TOUR_KEY    = '0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e';   // TourAPI 서비스키
+  window.SPORTRIP_WEATHER_KEY = '0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e';   // 기상청 API 키 (TourAPI와 동일)
+  // 2) Kakao Developers → 내 애플리케이션 → 앱 키 → JavaScript 키
+  window.SPORTRIP_KAKAO_KEY   = '';   // 카카오 JS 키 (Geocoding / 지도)
+</script>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1B4F72">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -448,7 +459,11 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 .toast.success{background:var(--success)}.toast.error{background:var(--error)}.toast.warning{background:var(--accent);color:#1a1a1a}
 @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.stats-grid-4{grid-template-columns:repeat(2,1fr)}.hiw-grid{grid-template-columns:1fr}.usp-grid{grid-template-columns:1fr 1fr}.biz-grid{grid-template-columns:1fr}.risk-grid{grid-template-columns:1fr}.target-content.active{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(2,1fr)}.admin-layout{grid-template-columns:1fr}.admin-sidebar{display:none}}
-@media(max-width:768px){.search-row{grid-template-columns:1fr 1fr}.btn-search{grid-column:1/-1}.main-content{grid-template-columns:1fr;grid-template-rows:280px 1fr}.detail-body{grid-template-columns:1fr}.detail-right{display:none}.form-row{grid-template-columns:1fr}.hero{padding:80px 22px 44px}}
+@media(max-width:768px){.search-row{grid-template-columns:1fr 1fr}.btn-search{grid-column:1/-1}.main-content{grid-template-columns:1fr;grid-template-rows:280px 1fr}.detail-body{grid-template-columns:1fr}
+.detail-right{display:block}
+.detail-right-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;font-size:.82rem;font-weight:600;color:var(--primary);cursor:pointer;border-bottom:1px solid var(--border);background:var(--white)}
+.detail-right-body{display:none}
+.detail-right-body.open{display:block}.form-row{grid-template-columns:1fr}.hero{padding:80px 22px 44px}}
 @media(max-width:480px){.gnb-nav{display:none}.search-row{grid-template-columns:1fr}.usp-grid{grid-template-columns:1fr}.stats-bar{grid-template-columns:1fr 1fr}}
 
 /* TOURAPI 데이터 UI */
@@ -548,12 +563,35 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 .autocomplete-item:last-child{border-bottom:none}
 .search-wrap{position:relative}
 
+
+/* ── 햄버거 메뉴 (≤480px) ── */
+.burger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px;border:none;background:none}
+.burger span{display:block;width:20px;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:all .25s}
+.gnb.light .burger span{background:var(--text)}
+.burger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.mobile-menu{position:fixed;top:60px;left:0;right:0;background:var(--dark);border-bottom:1px solid rgba(255,255,255,.1);z-index:190;display:none;flex-direction:column;padding:8px 0}
+.mobile-menu.light{background:var(--white);border-bottom-color:var(--border);box-shadow:var(--shadow-lg)}
+.mobile-menu .mob-link{padding:12px 24px;font-size:.9rem;font-weight:500;color:rgba(255,255,255,.8);cursor:pointer;border:none;background:none;text-align:left;width:100%;transition:background .15s}
+.mobile-menu.light .mob-link{color:var(--text)}
+.mobile-menu .mob-link:hover{background:rgba(255,255,255,.08)}
+.mobile-menu.light .mob-link:hover{background:var(--light)}
+@media(max-width:480px){
+  .gnb-nav{display:none!important}
+  .burger{display:flex}
+  .mobile-menu.show{display:flex}
+}
+
 </style>
 </head>
 <body>
 <!-- GNB -->
 <nav class="gnb" id="mainGnb">
   <div class="gnb-logo" onclick="showPage('landing')">⚽ SPOR<span class="dot">TRIP</span></div>
+  <button class="burger" id="burgerBtn" onclick="toggleMobileMenu()" aria-label="메뉴">
+    <span></span><span></span><span></span>
+  </button>
   <div class="gnb-nav" id="gnbNav">
     <button class="gnb-link" onclick="showPage('landing')">홈</button>
     <button class="gnb-link" onclick="showPage('main')">대회 검색</button>
@@ -572,6 +610,15 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
   </div>
 </nav>
 
+<!-- 모바일 드롭다운 메뉴 -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mob-link" onclick="showPage('landing');closeMobileMenu()">🏠 홈</button>
+  <button class="mob-link" onclick="showPage('main');closeMobileMenu()">🔍 대회 검색</button>
+  <button class="mob-link" onclick="requireLogin('register');closeMobileMenu()">✚ 간편등록</button>
+  <button class="mob-link" onclick="requireLogin('my');closeMobileMenu()">👤 마이페이지</button>
+  <button class="mob-link" onclick="showPage('data');closeMobileMenu()">🔌 데이터</button>
+  <button class="mob-link" id="mobAdminBtn" style="display:none" onclick="showPage('admin');closeMobileMenu()">🛠 관리자</button>
+</div>
 <!-- ═══ LANDING ═══ -->
 <div id="page-landing" class="page active" style="background:var(--dark)">
   <section class="hero">
@@ -822,6 +869,10 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
   <div class="detail-body">
     <div class="detail-left" id="detailLeft"></div>
     <div class="detail-right">
+      <div class="detail-right-toggle" onclick="toggleDetailRight(this)" id="detailRightToggle">
+        🗺️ 지도 &amp; 주변 숙소 <span id="detailRightArrow">▼</span>
+      </div>
+      <div class="detail-right-body open" id="detailRightBody">
       <div class="detail-map-container">
         <div style="width:100%;height:100%;background:linear-gradient(180deg,#C8E6F0 0%,#A8D8EA 100%);position:relative">
           <svg viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;opacity:.4">
@@ -836,6 +887,7 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
         </div>
       </div>
       <div class="stay-list" id="stayList"></div>
+      </div><!-- detail-right-body -->
     </div>
   </div>
 </div>
@@ -1110,7 +1162,7 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
             <div>
   <label class="form-label">TourAPI 서비스키 <span style="color:var(--success);font-size:.7rem">✅ 연동됨</span></label>
   <div style="display:flex;gap:6px">
-    <input class="form-control" type="text" id="apiKeyInput" value="0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e" style="font-family:'DM Mono',monospace;font-size:.72rem">
+    <input class="form-control" type="text" id="apiKeyInput" value="${window.SPORTRIP_WEATHER_KEY||""}" style="font-family:'DM Mono',monospace;font-size:.72rem">
     <button style="padding:8px 12px;background:var(--primary);color:var(--white);border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap" onclick="applyApiKey()">적용</button>
   </div>
   <div style="font-size:.68rem;color:var(--muted);margin-top:3px">엔드포인트: https://apis.data.go.kr/B551011/KorService2</div>
@@ -1141,7 +1193,7 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
     <div id="loginForm">
       <div class="login-input-group"><label>이메일</label><div class="input-with-icon"><span class="input-icon">📧</span><input type="email" class="form-control" id="loginEmail" placeholder="이메일을 입력하세요"></div></div>
       <div class="login-input-group"><label>비밀번호</label><div class="input-with-icon"><span class="input-icon">🔒</span><input type="password" class="form-control" id="loginPw" placeholder="비밀번호를 입력하세요" onkeydown="if(event.key==='Enter')doLogin()"></div></div>
-      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:.71rem;color:#065F46">💡 <strong>테스트 계정</strong> — 일반: user@sportrip.kr / 1234 &nbsp;|&nbsp; 관리자: admin@sportrip.kr / admin1234</div>
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:.71rem;color:#065F46">💡 <strong>데모 계정</strong> — user@sportrip.kr / 1234</div>
       <button class="btn-primary-full" style="margin-top:4px" onclick="doLogin()">로그인</button>
       <div class="login-divider">또는</div>
       <div class="social-btns"><button class="btn-social" onclick="socialLogin('kakao')">🟡 카카오로 로그인</button><button class="btn-social" onclick="socialLogin('naver')">🟢 네이버로 로그인</button></div>
@@ -1448,7 +1500,7 @@ const COURSES={
 };
 const STAYS=[{name:'스탠포드 호텔 서울',type:'호텔 4성급',icon:'🏨',stars:4.1,dist:'1.5km'},{name:'상암 스위트포레',type:'레지던스',icon:'🏠',stars:4.1,dist:'0.8km'},{name:'홍대 인노 호스텔',type:'호스텔',icon:'🛏️',stars:4.2,dist:'3.5km'}];
 const FESTIVALS=[{name:'2025 마포 서울빛초롱축제',date:'2025.10.12~10.20',icon:'🏮'},{name:'한강 몬스터 트라이애슬론',date:'2025.10.15',icon:'🎪'}];
-const ACCOUNTS={'user@sportrip.kr':{pw:'1234',name:'김스포츠',role:'user'},'admin@sportrip.kr':{pw:'admin1234',name:'관리자',role:'admin'}};
+const ACCOUNTS={'user@sportrip.kr':{pw:'1234',name:'김스포츠',role:'user'},'admin@sportrip.kr':{pw:'admin9x#2k',name:'관리자',role:'admin'}};
 
 // ═══ AUTH ═══
 let AUTH={isLoggedIn:false,user:null};
@@ -1478,7 +1530,7 @@ function doLogin(){
   if(!em||!pw){showToast('이메일과 비밀번호를 입력해주세요.','error');return;}
   const acc=ACCOUNTS[em];if(!acc||acc.pw!==pw){showToast('이메일 또는 비밀번호가 틀렸습니다.','error');return;}
   AUTH={isLoggedIn:true,user:{name:acc.name,role:acc.role,email:em}};
-  closeLogin();updateGNB();showToast(`👋 ${acc.name}님, 환영합니다!`,'success');
+  closeLogin();updateGNB();persistSave();showToast(`👋 ${acc.name}님, 환영합니다!`,'success');
   if(acc.role==='admin')setTimeout(()=>showToast('🛠 관리자 계정으로 로그인되었습니다.','default'),1500);
 }
 function doSignup(){
@@ -1492,7 +1544,7 @@ function doSignup(){
   closeLogin();updateGNB();showToast(`🎉 ${nm}님 환영합니다!`,'success');
 }
 function socialLogin(p){showToast(`${p==='kakao'?'카카오':'네이버'} 로그인은 OAuth 연동 후 사용 가능합니다.`,'default');}
-function logout(){AUTH={isLoggedIn:false,user:null};updateGNB();showPage('landing');showToast('로그아웃 되었습니다.','default');favSet.clear();renderFavList();}
+function logout(){AUTH={isLoggedIn:false,user:null};LS.del('auth');updateGNB();showPage('landing');showToast('로그아웃 되었습니다.','default');favSet.clear();LS.del('favs');renderFavList();}
 
 // ═══ ROUTING ═══
 function showPage(n){
@@ -1526,10 +1578,10 @@ function renderEvents(list){
           <span class="badge badge-${e.status}">${statusLabel[e.status]||e.status}</span>
           ${e.participants?`<span class="badge" style="background:#F3E8FF;color:#7C3AED">${e.participants}</span>`:''}
         </div>
-        <div class="event-title">${e.title}</div>
-        <div class="event-venue">📍 ${e.venue}</div>
-        <div class="event-date">📅 ${e.start} ~ ${e.end}</div>
-        ${e.desc?`<div style="font-size:.69rem;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.desc}</div>`:''}
+        <div class="event-title">${escHtml(e.title)}</div>
+        <div class="event-venue">📍 ${escHtml(e.venue)}</div>
+        <div class="event-date">📅 ${escHtml(e.start)} ~ ${escHtml(e.end)}</div>
+        ${e.desc?`<div style="font-size:.69rem;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(e.desc)}</div>`:''}
       </div>
       <div class="event-dday">${dd}</div>
     </div>`;
@@ -1595,7 +1647,7 @@ function toggleFav(){
   const btn=document.getElementById('favBtn');
   if(favSet.has(curEv.id)){favSet.delete(curEv.id);btn.innerHTML='🤍 즐겨찾기';btn.classList.remove('active');showToast('즐겨찾기에서 삭제했습니다.','default');}
   else{favSet.add(curEv.id);btn.innerHTML='❤️ 즐겨찾기';btn.classList.add('active');showToast('즐겨찾기에 저장했습니다!','success');}
-  document.getElementById('myFavNum').textContent=favSet.size;renderFavList();
+  document.getElementById('myFavNum').textContent=favSet.size;renderFavList();persistSave();
 }
 function copyLink(){navigator.clipboard?.writeText(location.href).catch(()=>{});showToast('🔗 링크가 복사되었습니다!','success');}
 
@@ -1623,7 +1675,7 @@ function startGenerate(){
   let i=0;['ps1','ps2','ps3','ps4','ps5'].forEach((id,k)=>{const el=document.getElementById(id);el.classList.remove('done','active');el.querySelector('.p-step-icon').textContent=['📍','🌐','🗂️','🤖','✅'][k];});
   document.getElementById('pPercent').textContent='0%';document.getElementById('pFill').style.width='0%';
   function tick(){
-    if(i>=st.length){setTimeout(()=>{ov.classList.remove('show');EVENTS.push({id:EVENTS.length,title:document.getElementById('regTitle').value,sport:document.getElementById('regSport').value||'기타',icon:'🏆',venue:document.getElementById('regVenueName').value||'경기장',address:document.getElementById('regAddress').value,start:document.getElementById('regStart').value,end:document.getElementById('regEnd').value,status:'upcoming',region:'기타'});nextStep(4);showToast('🎉 AI 관광 코스가 생성되었습니다!','success');renderEvents(EVENTS);document.getElementById('s-events').textContent=EVENTS.length;},600);return;}
+    if(i>=st.length){setTimeout(()=>{ov.classList.remove('show');const newEv = createEvent({title:document.getElementById('regTitle').value,sport:document.getElementById('regSport').value||'기타',venue:document.getElementById('regVenueName').value||'경기장',address:document.getElementById('regAddress').value,start:document.getElementById('regStart').value,end:document.getElementById('regEnd').value});EVENTS.push(newEv);persistSave();nextStep(4);showToast('🎉 AI 관광 코스가 생성되었습니다!','success');renderEvents(EVENTS);document.getElementById('s-events').textContent=EVENTS.length;},600);return;}
     const s=st[i];document.getElementById('pPercent').textContent=s.pct+'%';document.getElementById('pFill').style.width=s.pct+'%';document.getElementById('pLabel').textContent=s.lb;
     if(i>0){const pv=st[i-1].ps;document.getElementById(pv).classList.remove('active');document.getElementById(pv).classList.add('done');document.getElementById(pv).querySelector('.p-step-icon').textContent='✅';}
     document.getElementById(s.ps).classList.add('active');i++;setTimeout(tick,i===4?3000:1500);
@@ -1663,7 +1715,7 @@ function saveEvent(){
   if(!tt||!s||!e||!ad){showToast('필수 항목을 모두 입력해주세요.','error');return;}
   const si={축구:'⚽',마라톤:'🏃',수영:'🏊',배드민턴:'🏸',테니스:'🎾',사이클:'🚴',농구:'🏀',기타:'🏆'};const sp=document.getElementById('ef-sport').value;
   if(editId!==null){const ev=EVENTS.find(e=>e.id===editId);if(ev){ev.title=tt;ev.sport=sp;ev.icon=si[sp]||'🏆';ev.region=document.getElementById('ef-region').value;ev.start=s;ev.end=e;ev.venue=document.getElementById('ef-venue').value;ev.address=ad;ev.status=document.getElementById('ef-status').value;}showToast('대회 정보가 수정되었습니다.','success');}
-  else{EVENTS.push({id:EVENTS.length,title:tt,sport:sp,icon:si[sp]||'🏆',venue:document.getElementById('ef-venue').value,address:ad,start:s,end:e,status:document.getElementById('ef-status').value,region:document.getElementById('ef-region').value});showToast('새 대회가 등록되었습니다.','success');document.getElementById('s-events').textContent=EVENTS.length;}
+  else{EVENTS.push(createEvent({title:tt,sport:sp,venue:document.getElementById('ef-venue').value,address:ad,start:s,end:e,status:document.getElementById('ef-status').value,region:document.getElementById('ef-region').value}));persistSave();showToast('새 대회가 등록되었습니다.','success');document.getElementById('s-events').textContent=EVENTS.length;}
   closeEventForm();renderEvents(EVENTS);renderAdminAll();
 }
 let cbk=null;
@@ -1676,8 +1728,8 @@ function closeConfirm(){document.getElementById('confirmOverlay').classList.remo
 // ═══════════════════════════════════════
 
 // --- 설정 ---
-let TOUR_API_KEY = '0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e';
-const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+let TOUR_API_KEY = window.SPORTRIP_TOUR_KEY || '';
+// CORS_PROXY: 미사용 제거
 const TOUR_BASE  = 'https://apis.data.go.kr/B551011/KorService2';
 
 // --- 대회별 위경도 매핑 ---
@@ -1972,11 +2024,24 @@ async function loadTourData(eventId) {
 
 function generateDefaultTourData(eventId) {
   const ev = EVENTS.find(e => e.id === eventId);
+  if (!ev) return { restaurants:[], attractions:[], stays:[], festivals:[] };
+  // 미구현 안내 — 실제 TourAPI 키 설정 시 자동 전환됩니다
+  const notice = `[미리보기] ${ev.region} 지역 TourAPI 데이터 — API 키 설정 후 실제 데이터로 전환됩니다`;
   return {
-    restaurants: [{ title: ev?.venue+' 주변 맛집', addr: ev?.address||'', dist:500, tel:'', cat:'음식점', img:'' }],
-    attractions: [{ title: ev?.venue+' 주변 관광지', addr: ev?.address||'', dist:1000, tel:'', cat:'관광지', img:'' }],
-    stays: [{ title: '주변 숙박시설', addr: ev?.address||'', dist:1500, tel:'', cat:'호텔', grade:'', img:'' }],
-    festivals: []
+    restaurants: [
+      { title:`${ev.region} 지역 대표 음식점`, addr:ev.address, dist:800, tel:'', cat:'한식', img:'', _preview:true },
+      { title:`${ev.region} 전통 맛집`, addr:ev.address, dist:1200, tel:'', cat:'향토음식', img:'', _preview:true },
+    ],
+    attractions: [
+      { title:`${ev.region} 대표 관광지`, addr:ev.address, dist:1000, tel:'', cat:'관광지', img:'', _preview:true },
+      { title:`${ev.venue} 인근 명소`, addr:ev.address, dist:1500, tel:'', cat:'명소', img:'', _preview:true },
+    ],
+    stays: [
+      { title:`${ev.region} 경기장 인근 숙박`, addr:ev.address, dist:1200, tel:'', cat:'호텔', grade:'', img:'', _preview:true },
+    ],
+    festivals: [],
+    _isPreview: true,
+    _notice: notice
   };
 }
 
@@ -2005,6 +2070,15 @@ async function renderCourseWithTourData(tab) {
     </div>`;
 
   const tourData = await getTourData(ev.id);
+  // 미리보기 데이터 안내
+  if (tourData?._isPreview) {
+    const notice = document.createElement('div');
+    notice.className = 'status-banner warn';
+    notice.style.margin = '0 0 10px';
+    notice.innerHTML = '<div class="banner-icon">⚠️</div><div><div class="banner-title">미리보기 데이터</div>TourAPI 키 설정 후 실제 관광 데이터로 자동 전환됩니다. 관리자 설정에서 API 키를 입력하세요.</div>';
+    const dl = document.getElementById('detailLeft');
+    if (dl) dl.prepend(notice);
+  }
 
   // 코스 구성: 하드코딩 데이터 우선, 없으면 TourAPI 데이터로 자동 생성
   let course = (COURSES[ev.id] && COURSES[ev.id][tab] && COURSES[ev.id][tab].length)
@@ -2316,6 +2390,7 @@ function qlUpdate(cats, reward) {
   sessionStorage.setItem('sptrip_reward', TOTAL_REWARD);
   showRewardFeedback(reward);
   updateRLUI();
+  syncMobAdminBtn();
 }
 
 // ── 스팟 점수 계산 ──
@@ -2639,7 +2714,7 @@ async function fetchWeather(lat, lng) {
     const base_date = now.toISOString().slice(0,10).replace(/-/g,'');
     const hh = String(now.getHours()).padStart(2,'0');
     const base_time = hh + '00';
-    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=0c75600eb379ddec6179b713ae087d0739d3cb22e8cdddcb76e29c4ee664ad9e&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&dataType=JSON`;
+    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${window.SPORTRIP_WEATHER_KEY||""}&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&dataType=JSON`;
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
     const data = await res.json();
     const items = data?.response?.body?.items?.item || [];
@@ -2914,11 +2989,150 @@ function imgFallback(el, emoji, cls) {
   } catch(e) { el.style.display='none'; }
 }
 
+
+// ── XSS 방어 ──
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+
+// ═══ 영속성 (localStorage) ═══
+const LS = {
+  get(k){try{return JSON.parse(localStorage.getItem('st_'+k))}catch{return null}},
+  set(k,v){try{localStorage.setItem('st_'+k,JSON.stringify(v))}catch{}},
+  del(k){try{localStorage.removeItem('st_'+k)}catch{}}
+};
+
+function persistSave() {
+  if (AUTH.isLoggedIn) LS.set('auth', AUTH);
+  LS.set('favs', [...favSet]);
+  // 신규 등록 대회(id >= 8)만 저장
+  const custom = EVENTS.filter(e => e.id >= 8);
+  if (custom.length) LS.set('customEvents', custom);
+}
+
+function persistLoad() {
+  // 로그인 복원
+  const savedAuth = LS.get('auth');
+  if (savedAuth?.isLoggedIn) {
+    AUTH = savedAuth;
+    updateGNB();
+  }
+  // 즐겨찾기 복원
+  const savedFavs = LS.get('favs');
+  if (Array.isArray(savedFavs)) savedFavs.forEach(id => favSet.add(id));
+  document.getElementById('myFavNum').textContent = favSet.size;
+  // 신규 대회 복원
+  const customEvts = LS.get('customEvents');
+  if (Array.isArray(customEvts)) {
+    customEvts.forEach(e => {
+      if (!EVENTS.find(x => x.id === e.id)) EVENTS.push(e);
+    });
+    renderEvents(EVENTS);
+  }
+}
+
+
+// ═══ 해시 라우터 ═══
+const HASH_PAGES = ['landing','main','detail','register','my','data','admin'];
+
+function hashNav(page) {
+  if (page && HASH_PAGES.includes(page)) {
+    history.pushState({page}, '', '#' + page);
+  }
+}
+
+// showPage 래핑 — 해시 동기화
+const _origShowPageHash = showPage;
+showPage = function(n) {
+  _origShowPageHash(n);
+  hashNav(n);
+};
+
+// 뒤로가기/앞으로가기
+window.addEventListener('popstate', e => {
+  const page = e.state?.page || location.hash.replace('#','') || 'landing';
+  if (HASH_PAGES.includes(page)) _origShowPageHash(page);
+});
+
+// 초기 로드 시 해시 복원
+(function restoreHash() {
+  const hash = location.hash.replace('#','');
+  if (hash && HASH_PAGES.includes(hash) && hash !== 'admin') {
+    setTimeout(() => _origShowPageHash(hash), 100);
+  }
+})();
+
+
+// ── 햄버거 메뉴 ──
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('burgerBtn');
+  const isLight = document.getElementById('mainGnb').classList.contains('light');
+  menu.classList.toggle('show');
+  menu.classList.toggle('light', isLight);
+  btn.classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileMenu')?.classList.remove('show');
+  document.getElementById('burgerBtn')?.classList.remove('open');
+}
+// 페이지 이동 시 메뉴 닫기
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('burgerBtn');
+  if (menu?.classList.contains('show') && !menu.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+    closeMobileMenu();
+  }
+});
+// 관리자 메뉴 모바일 표시
+function syncMobAdminBtn() {
+  const btn = document.getElementById('mobAdminBtn');
+  if (btn) btn.style.display = (AUTH.isLoggedIn && AUTH.user?.role==='admin') ? 'block' : 'none';
+}
+
+// ── 태블릿 detail-right 접이식 ──
+function toggleDetailRight(el) {
+  const body  = document.getElementById('detailRightBody');
+  const arrow = document.getElementById('detailRightArrow');
+  body?.classList.toggle('open');
+  if (arrow) arrow.textContent = body?.classList.contains('open') ? '▼' : '▶';
+}
+
+
+// ═══ 대회 생성 통합 함수 ═══
+function createEvent(fields) {
+  const sportIcons = {축구:'⚽',마라톤:'🏃',수영:'🏊',배드민턴:'🏸',테니스:'🎾',사이클:'🚴',농구:'🏀',기타:'🏆',종합:'🏅'};
+  const today = new Date(); const s = new Date(fields.start||today);
+  const status = fields.status || (s < today ? 'done' : 'upcoming');
+  return {
+    id: fields.id ?? EVENTS.length,
+    title: fields.title||'',
+    sport: fields.sport||'기타',
+    icon:  sportIcons[fields.sport] || '🏆',
+    venue: fields.venue||'',
+    address: fields.address||'',
+    start: fields.start||'',
+    end:   fields.end||fields.start||'',
+    status,
+    region: fields.region||'기타',
+    desc: fields.desc||'',
+    url: fields.url||'',
+    participants: fields.participants||'',
+    lat: fields.lat||0,
+    lng: fields.lng||0,
+  };
+}
+
 // ═══ TOAST ═══
 function showToast(msg,type='default'){const c=document.getElementById('toastContainer');const t=document.createElement('div');t.className='toast'+(type!=='default'?' '+type:'');t.innerHTML=msg;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
 
 // ═══ INIT ═══
-renderEvents(EVENTS);renderFavList();updateGNB();
+renderEvents(EVENTS);renderFavList();updateGNB();persistLoad();
 ['loginOverlay','eventFormOverlay','confirmOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});});
 window.addEventListener('scroll',()=>{if(document.getElementById('page-landing').classList.contains('active')){document.getElementById('mainGnb').style.background=window.scrollY>80?'rgba(10,10,11,.98)':'rgba(10,10,11,.95)';}});
 </script>
