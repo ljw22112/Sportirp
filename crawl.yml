@@ -1,0 +1,58 @@
+name: 🏅 스포트립 대회 데이터 자동 크롤링
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # 매일 오전 3시 KST (UTC 18:00 전날)
+  workflow_dispatch:        # 수동 실행 버튼
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ── 1. 저장소 체크아웃 ──
+      - name: 📥 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      # ── 2. Python 환경 ──
+      - name: 🐍 Python 3.11 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # ── 3. 의존성 설치 ──
+      - name: 📦 의존성 설치
+        run: |
+          pip install --upgrade pip
+          pip install playwright beautifulsoup4 lxml requests schedule
+          playwright install chromium --with-deps
+
+      # ── 4. 크롤러 실행 ──
+      - name: 🕷️ 크롤러 실행
+        run: python scripts/crawler.py
+
+      # ── 5. 변경사항 커밋·푸시 ──
+      - name: 📤 변경사항 커밋 & 푸시
+        run: |
+          git config user.name  "sportrip-bot"
+          git config user.email "bot@sportrip.kr"
+          git add index.html scripts/events.json scripts/crawler.log
+          git diff --staged --quiet || \
+            git commit -m "🤖 대회 데이터 자동 업데이트 $(date +'%Y-%m-%d %H:%M KST')"
+          git push
+
+      # ── 6. 결과 요약 출력 ──
+      - name: 📊 수집 결과 요약
+        run: |
+          python - << 'EOF'
+          import json
+          with open('scripts/events.json') as f:
+              r = json.load(f)
+          print(f"✅ 업데이트: {r['updated_at']}")
+          print(f"📊 총 대회: {r['total']}건")
+          for src, cnt in r.get('by_source',{}).items():
+              print(f"   {src}: {cnt}건")
+          EOF
