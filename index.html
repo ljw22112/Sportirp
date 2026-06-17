@@ -2707,21 +2707,25 @@ const WEATHER_ICON = {
 async function fetchWeather(lat, lng) {
   if (!lat || !lng) return null;
   try {
-    // 기상청 초단기실황 (격자 변환은 근사값 사용)
-    const nx = Math.round((lng - 126) * 30 / 1.5 + 60);
-    const ny = Math.round((lat - 35)  * 30 / 1.5 + 60);
-    const now = new Date();
-    const base_date = now.toISOString().slice(0,10).replace(/-/g,'');
-    const hh = String(now.getHours()).padStart(2,'0');
-    const base_time = hh + '00';
-    const url = `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${window.SPORTRIP_WEATHER_KEY||""}&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}&dataType=JSON`;
-    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    // Open-Meteo API (무료·키 불필요·CORS 허용)
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,precipitation,weathercode&timezone=Asia%2FSeoul`;
+    const res = await fetch(url, {signal: AbortSignal.timeout(6000)});
     const data = await res.json();
-    const items = data?.response?.body?.items?.item || [];
-    const t1h = items.find(i => i.category === 'T1H')?.obsrValue;
-    const rn1 = items.find(i => i.category === 'RN1')?.obsrValue;
-    const sky = parseFloat(rn1) > 0 ? '비' : '맑음';
-    return { temp: t1h ? Math.round(parseFloat(t1h)) : null, sky };
+    const cur = data?.current;
+    if (!cur) return null;
+    const temp = Math.round(cur.temperature_2m);
+    const code = cur.weathercode;
+    const rain = cur.precipitation > 0;
+    // WMO 날씨 코드 → 한글
+    let sky = '맑음';
+    if (code === 0) sky = '맑음';
+    else if (code <= 3) sky = '구름조금';
+    else if (code <= 48) sky = '안개';
+    else if (code <= 67) sky = '비';
+    else if (code <= 77) sky = '눈';
+    else if (code <= 82) sky = '소나기';
+    else sky = '흐림';
+    return { temp, sky, rain };
   } catch(e) {
     return null;
   }
